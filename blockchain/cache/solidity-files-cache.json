@@ -1,0 +1,77 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "C:\\Users\\Parth\\Desktop\\final_year Phase 2\\blockchain\\contracts\\IdentityLedger.sol": {
+      "lastModificationDate": 1773202011570,
+      "contentHash": "e53f7d652a16bc3028bd5db919bde23c",
+      "sourceName": "contracts/IdentityLedger.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IdentityLedger"
+      ]
+    },
+    "C:\\Users\\Parth\\Desktop\\FinalYearProject-updated\\FinalYearProject-main\\blockchain\\contracts\\IdentityLedger.sol": {
+      "lastModificationDate": 1774343499395,
+      "contentHash": "090649aa06a0f63b5a32a3a91a86556a",
+      "sourceName": "contracts/IdentityLedger.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IdentityLedger"
+      ]
+    }
+  }
+}

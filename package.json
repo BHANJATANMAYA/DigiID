@@ -1,0 +1,32 @@
+{
+  "name": "digital-identity-backend",
+  "version": "1.0.0",
+  "description": "Express.js + PostgreSQL backend for College Student ID storage with SHA-256 hash generation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "import:csv": "node backend/scripts/importCSV.js backend/data/sample_documents.csv"
+  },
+  "keywords": [
+    "express",
+    "postgresql",
+    "student-id",
+    "sha256",
+    "rest-api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.16.0",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "puppeteer": "^24.40.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — DigiID Verify | MeitY / NIC</title>
+    <meta name="description"
+        content="Securely login to the DigiID Verify National ID Verification Portal — Government of India.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── Variables ── */
+        :root {
+            --navy: #1a3a6b;
+            --navy-dark: #102347;
+            --saffron: #FF6B00;
+            --india-green: #138808;
+            --bg: #f0f0f0;
+            --card-bg: #ffffff;
+            --border: #dce2ea;
+            --text: #1a2434;
+            --muted: #5a6a7e;
+            --light: #8a96a3;
+            --input-bg: #f6f7f8;
+            --shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0d1520;
+            --card-bg: #1a2436;
+            --border: #2a3a50;
+            --text: #e8edf4;
+            --muted: #8a9ab2;
+            --light: #5a6a7e;
+            --input-bg: #111e2e;
+            --shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ── Tricolor ── */
+        .tricolor-top {
+            height: 5px;
+            background: linear-gradient(to right, var(--saffron) 33.33%, #fff 33.33% 66.66%, var(--india-green) 66.66%);
+            flex-shrink: 0;
+        }
+
+        /* ── Gov Topbar ── */
+        .gov-topbar {
+            background: #0d2646;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            flex-shrink: 0;
+        }
+
+        .gov-topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .gov-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .gov-emblem {
+            width: 24px;
+            height: 24px;
+        }
+
+        .gov-title span {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.68rem;
+            font-weight: 600;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .topbar-right select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .topbar-right select option {
+            background: #0d2646;
+            color: #fff;
+        }
+
+        .dark-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+            letter-spacing: 0.03em;
+        }
+
+        .dark-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ── Site Header ── */
+        .site-header {
+            background: var(--navy);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .logo-d {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--saffron), #d45800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(255, 107, 0, 0.35);
+            flex-shrink: 0;
+        }
+
+        .logo-title {
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 800;
+            line-height: 1.1;
+            display: block;
+        }
+
+        .logo-sub {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.58rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 2px;
+            display: block;
+        }
+
+        .header-right-help {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.76rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-right-help a {
+            color: rgba(255, 255, 255, 0.55);
+            transition: color 0.2s;
+        }
+
+        .header-right-help a:hover {
+            color: #fff;
+        }
+
+        .header-right-help .sep {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ── Page body ── */
+        .page-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ── Login Card ── */
+        .login-card {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            animation: card-rise 0.45s ease both;
+        }
+
+        @keyframes card-rise {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* LEFT panel */
+        .login-left {
+            background: linear-gradient(160deg, var(--navy-dark) 0%, var(--navy) 60%, #1e4f9c 100%);
+            padding: 44px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='52' height='52' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='.025'%3E%3Cpath d='M26 26.5V24H0v5h5v5H0v5h26v-5h26v-5H26zm0-2h26V9h5V4h-5V0H26v4H5v10h21v4.5z'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-headline {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.25;
+            margin-bottom: 36px;
+            letter-spacing: -0.01em;
+        }
+
+        .left-headline span {
+            color: #FFD580;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .feat-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feat-icon svg {
+            width: 18px;
+            height: 18px;
+            color: #FFD580;
+        }
+
+        .feat-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .feat-desc {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.55);
+            line-height: 1.5;
+        }
+
+        .cert-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 107, 0, 0.12);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cert-badge svg {
+            width: 20px;
+            height: 20px;
+            color: var(--saffron);
+            flex-shrink: 0;
+        }
+
+        .cert-badge-text {
+            font-size: 0.73rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.35;
+        }
+
+        /* RIGHT panel */
+        .login-right {
+            background: var(--card-bg);
+            padding: 44px 40px;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s;
+        }
+
+        .right-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+
+        .right-sub {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-bottom: 26px;
+            transition: color 0.3s;
+        }
+
+        /* Login method tabs */
+        .method-tabs {
+            display: flex;
+            gap: 0;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+
+        .method-tab {
+            flex: 1;
+            padding: 10px 12px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .method-tab svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .method-tab.active {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .method-tab:not(.active):hover {
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        /* OTP Panel */
+        .otp-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .otp-panel.hidden {
+            display: none;
+        }
+
+        /* Field */
+        .field-group {
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.66rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+            transition: color 0.3s;
+        }
+
+        [data-theme="dark"] .field-label {
+            color: #7ea8e0;
+        }
+
+        .phone-input-wrap {
+            display: flex;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: var(--input-bg);
+        }
+
+        .phone-input-wrap:focus-within {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.1);
+        }
+
+        .phone-prefix {
+            background: var(--border);
+            padding: 11px 14px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--muted);
+            border-right: 1.5px solid var(--border);
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .phone-prefix svg {
+            width: 14px;
+            height: 10px;
+        }
+
+        .phone-number {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 11px 14px;
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            outline: none;
+        }
+
+        .phone-number::placeholder {
+            color: var(--light);
+        }
+
+        /* OTP boxes */
+        .otp-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            justify-content: space-between;
+        }
+
+        .otp-digit {
+            flex: 1;
+            width: 0;
+            max-width: 46px;
+            height: 50px;
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            background: var(--input-bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .otp-digit:focus {
+            border-color: var(--navy);
+            box-shadow: 0 0 0 3px rgba(26, 58, 107, 0.1);
+        }
+
+        .otp-hint {
+            font-size: 0.73rem;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .otp-hint a {
+            color: var(--navy);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        [data-theme="dark"] .otp-hint a {
+            color: #7ea8e0;
+        }
+
+        .otp-timer {
+            color: var(--saffron);
+            font-weight: 700;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--navy) 0%, #1e4f9c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 13px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(26, 58, 107, 0.28);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 58, 107, 0.38);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-primary svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0 18px;
+            color: var(--light);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* DigiLocker button */
+        .btn-digilocker {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 9px;
+            padding: 12px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            transition: all 0.2s;
+        }
+
+        .btn-digilocker:hover {
+            border-color: var(--navy);
+            background: var(--card-bg);
+        }
+
+        .btn-digilocker:hover .dl-icon {
+            background: var(--navy);
+            color: #fff;
+        }
+
+        .dl-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            background: var(--navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .dl-icon svg {
+            width: 14px;
+            height: 14px;
+            color: #fff;
+        }
+
+        /* footer links inside card */
+        .login-card-footer {
+            margin-top: auto;
+            padding-top: 24px;
+        }
+
+        .register-link {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .register-link a {
+            color: var(--navy);
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+
+        .register-link a:hover {
+            color: var(--saffron);
+        }
+
+        [data-theme="dark"] .register-link a {
+            color: #7ea8e0;
+        }
+
+        .card-foot-links {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .card-foot-links a {
+            font-size: 0.72rem;
+            color: var(--light);
+            transition: color 0.2s;
+        }
+
+        .card-foot-links a:hover {
+            color: var(--text);
+        }
+
+        .card-foot-sep {
+            color: var(--border);
+            font-size: 0.8rem;
+        }
+
+        /* DigiLocker tab panel */
+        .digi-panel {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .digi-panel.active {
+            display: flex;
+        }
+
+        .digi-info-box {
+            background: rgba(26, 58, 107, 0.06);
+            border: 1px solid rgba(26, 58, 107, 0.18);
+            border-left: 4px solid var(--navy);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.55;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        [data-theme="dark"] .digi-info-box {
+            background: rgba(26, 58, 107, 0.18);
+            border-color: rgba(100, 150, 255, 0.25);
+            color: var(--muted);
+        }
+
+        .digi-info-box svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+            width: 15px;
+            height: 15px;
+            color: var(--navy);
+        }
+
+        [data-theme="dark"] .digi-info-box svg {
+            color: #7ea8e0;
+        }
+
+        .btn-digi-connect {
+            width: 100%;
+            background: linear-gradient(135deg, #1a5fbc, #0d3b8e);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 13px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(26, 95, 188, 0.3);
+        }
+
+        .btn-digi-connect:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(26, 95, 188, 0.4);
+        }
+
+        .btn-digi-connect svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Error msg */
+        .login-error {
+            background: rgba(220, 53, 69, 0.08);
+            border: 1px solid rgba(220, 53, 69, 0.25);
+            color: #a71d2a;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            display: none;
+            margin-bottom: 14px;
+        }
+
+        .login-success {
+            background: rgba(19, 136, 8, 0.08);
+            border: 1px solid rgba(19, 136, 8, 0.25);
+            color: #1a5e12;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: none;
+            margin-bottom: 14px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── Site Footer ── */
+        .site-footer {
+            background: #0d1f3a;
+            color: rgba(255, 255, 255, 0.68);
+            flex-shrink: 0;
+        }
+
+        .footer-top {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 32px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+
+        .footer-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 13px;
+        }
+
+        .footer-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 107, 0, 0.18);
+            border: 1px solid rgba(255, 107, 0, 0.28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--saffron);
+        }
+
+        .footer-brand-name {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #fff;
+            display: block;
+        }
+
+        .footer-brand-sub {
+            font-size: 0.58rem;
+            color: rgba(255, 255, 255, 0.38);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .footer-desc {
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.46);
+            max-width: 270px;
+        }
+
+        .footer-col-title {
+            font-size: 0.67rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 13px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links a {
+            font-size: 0.74rem;
+            color: rgba(255, 255, 255, 0.48);
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .footer-links a::before {
+            content: '›';
+            color: var(--saffron);
+            font-size: 1rem;
+            line-height: 0;
+            margin-top: 1px;
+        }
+
+        .footer-links a:hover {
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .f-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 5px;
+            padding: 3px 8px;
+            font-size: 0.63rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.04em;
+            margin-bottom: 5px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-tricolor {
+            width: 52px;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(to right, var(--saffron) 33%, #fff 33% 66%, var(--india-green) 66%);
+        }
+
+        .footer-copy {
+            font-size: 0.67rem;
+            color: rgba(255, 255, 255, 0.33);
+        }
+
+        .footer-motto {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.22);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 860px) {
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .footer-top {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 720px) {
+            .login-card {
+                grid-template-columns: 1fr;
+            }
+
+            .login-left {
+                display: none;
+            }
+
+            .login-right {
+                padding: 32px 24px;
+            }
+
+            .page-body {
+                padding: 20px 16px;
+                align-items: flex-start;
+            }
+
+            .gov-title span {
+                font-size: 0.6rem;
+            }
+
+            .nic-credit {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TRICOLOR TOP STRIP -->
+    <div class="tricolor-top" aria-hidden="true"></div>
+
+    <!-- GOV TOPBAR -->
+    <div class="gov-topbar" role="banner">
+        <div class="gov-topbar-inner">
+            <div class="gov-title">
+                <svg class="gov-emblem" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="13" cy="13" r="12" stroke="rgba(255,255,255,0.45)" stroke-width="1.3" />
+                    <circle cx="13" cy="13" r="3.5" fill="rgba(255,255,255,0.2)" />
+                    <circle cx="13" cy="13" r="1.3" fill="rgba(255,255,255,0.6)" />
+                    <line x1="13" y1="2" x2="13" y2="4.5" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+                    <line x1="13" y1="21.5" x2="13" y2="24" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+                    <line x1="2" y1="13" x2="4.5" y2="13" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+                    <line x1="21.5" y1="13" x2="24" y2="13" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+                    <line x1="5.2" y1="5.2" x2="6.8" y2="6.8" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                    <line x1="19.2" y1="19.2" x2="20.8" y2="20.8" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                    <line x1="20.8" y1="5.2" x2="19.2" y2="6.8" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                    <line x1="6.8" y1="19.2" x2="5.2" y2="20.8" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                </svg>
+                <span data-i18n="gov_topbar_text">Government of India &nbsp;|&nbsp; Ministry of Electronics &amp; Information Technology</span>
+            </div>
+            <div class="topbar-right">
+                <select id="langSelect" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी</option>
+                </select>
+                <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode">
+                    <span id="darkIcon">🌙</span> Dark Mode
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SITE HEADER -->
+    <header class="site-header" role="banner">
+        <div class="header-logo">
+            <div class="logo-d">D</div>
+            <div>
+                <span class="logo-title">DigiID Verify</span>
+                <span class="logo-sub" data-i18n="national_id_portal">National ID Verification Portal</span>
+            </div>
+        </div>
+
+    </header>
+
+    <!-- PAGE BODY -->
+    <div class="page-body">
+        <div class="login-card" role="main">
+
+            <!-- LEFT PANEL -->
+            <div class="login-left" aria-label="Portal features">
+                <div class="left-content">
+                    <h1 class="left-headline"><span data-i18n="one_identity">One Identity,</span><br><span data-i18n="infinite_possibilities">Infinite Possibilities.</span></h1>
+                    <div class="feature-list">
+
+                        <div class="feature-item">
+                            <div class="feat-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                    <polyline points="9 12 11 14 15 10" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="feat-title" data-i18n="highly_secure">Highly Secure</div>
+                                <div class="feat-desc" data-i18n="highly_secure_desc">End-to-end encrypted authentication for all government portals.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feat-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="feat-title" data-i18n="digilocker_integration">DigiLocker Integration</div>
+                                <div class="feat-desc" data-i18n="digilocker_integration_desc">Access your digital documents instantly upon login.</div>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feat-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="9 11 12 14 22 4" />
+                                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="feat-title" data-i18n="paperless_verification">Paperless Verification</div>
+                                <div class="feat-desc" data-i18n="paperless_verification_desc">Seamlessly verify your identity across departments.</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="cert-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    <div class="cert-badge-text" data-i18n="cert_badge_text">Certified GIGW 3.0 &amp; STQC Compliant Architecture</div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="login-right" aria-label="Login form">
+                <h2 class="right-title" data-i18n="login_to_account">Login to your account</h2>
+                <p class="right-sub" data-i18n="select_login_method">Select your preferred login method</p>
+
+                <!-- Method tabs -->
+                <div class="method-tabs" role="tablist" aria-label="Login method">
+                    <button class="method-tab active" id="tab-otp" role="tab" aria-selected="true"
+                        aria-controls="panel-otp">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z" />
+                        </svg>
+                        <span data-i18n="mobile_otp">Mobile / OTP</span>
+                    </button>
+                    <button class="method-tab" id="tab-digi" role="tab" aria-selected="false"
+                        aria-controls="panel-digi">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        <span data-i18n="digilocker">DigiLocker</span>
+                    </button>
+                </div>
+
+                <!-- Error / Success messages -->
+                <div class="login-error" id="loginError" role="alert"></div>
+                <div class="login-success" id="loginSuccess" role="status">
+                    <span>✅</span><span id="loginSuccessMsg"></span>
+                </div>
+
+                <!-- OTP Panel -->
+                <div id="panel-otp" role="tabpanel" aria-labelledby="tab-otp">
+
+                    <!-- Step 1: Mobile -->
+                    <div id="step-mobile">
+                        <div class="field-group">
+                            <label class="field-label" for="mobileNumber" data-i18n="mobile_number">Mobile Number</label>
+                            <div class="phone-input-wrap">
+                                <div class="phone-prefix">
+                                    <!-- India flag SVG inline mini -->
+                                    <svg viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="28" height="6.67" fill="#FF6B00" />
+                                        <rect y="6.67" width="28" height="6.67" fill="#fff" />
+                                        <rect y="13.33" width="28" height="6.67" fill="#138808" />
+                                        <circle cx="14" cy="10" r="2.8" fill="none" stroke="#000080"
+                                            stroke-width="0.8" />
+                                    </svg>
+                                    +91
+                                </div>
+                                <input class="phone-number" type="tel" id="mobileNumber"
+                                    placeholder="Enter 10-digit number" data-i18n-placeholder="placeholder_mobile" maxlength="10" inputmode="numeric"
+                                    autocomplete="tel-national">
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="btnRequestOtp">
+                            <span data-i18n="request_otp">Request OTP</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                                <polyline points="12 5 19 12 12 19" />
+                            </svg>
+                        </button>
+
+                        <div class="divider" data-i18n="or_sign_in_with">OR SIGN IN WITH</div>
+
+                        <button class="btn-digilocker" id="btnDigiLocker2">
+                            <div class="dl-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                            </div>
+                            <span data-i18n="login_with_digilocker">Login with DigiLocker</span>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: OTP (hidden until OTP requested) -->
+                    <div id="step-otp" style="display:none;">
+                        <div class="field-group">
+                            <label class="field-label" data-i18n="enter_otp">Enter OTP</label>
+                            <div class="otp-row" id="otpRow">
+                                <input class="otp-digit" type="text" maxlength="1" inputmode="numeric"
+                                    aria-label="OTP digit 1">
+                                <input class="otp-digit" type="text" maxlength="1" inputmode="numeric"
+                                    aria-label="OTP digit 2">
+                                <input class="otp-digit" type="text" maxlength="1" inputmode="numeric"
+                                    aria-label="OTP digit 3">
+                                <input class="otp-digit" type="text" maxlength="1" inputmode="numeric"
+                                    aria-label="OTP digit 4">
+                                <input class="otp-digit" type="text" maxlength="1" inputmode="numeric"
+                                    aria-label="OTP digit 5">
+                                <input class="otp-digit" type="text" maxlength="1" inputmode="numeric"
+                                    aria-label="OTP digit 6">
+                            </div>
+                            <p class="otp-hint">
+                                OTP sent to +91 <span id="maskedNumber">XXXXXX</span>.
+                                <a id="resendOtp">Resend</a> in <span class="otp-timer" id="otpTimer">30s</span>
+                            </p>
+                        </div>
+                        <button class="btn-primary" id="btnVerifyOtp">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                                <polyline points="9 12 11 14 15 10" />
+                            </svg>
+                            <span data-i18n="verify_otp_login">Verify OTP &amp; Login</span>
+                        </button>
+                        <p style="font-size:0.73rem;color:var(--muted);text-align:center;margin-top:12px;">
+                            <a href="#" id="changeMobile" style="color:var(--navy);font-weight:600;" data-i18n="change_mobile">✏ Change mobile
+                                number</a>
+                        </p>
+                    </div>
+
+
+                </div>
+
+                <!-- DigiLocker Panel -->
+                <div id="panel-digi" role="tabpanel" aria-labelledby="tab-digi" class="digi-panel">
+                    <div class="digi-info-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <span>You will be securely redirected to the <strong>DigiLocker</strong> platform to
+                            authenticate using your Aadhaar-linked credentials. Your data is protected under the
+                            <strong>DPDP Act, 2023</strong>.</span>
+                    </div>
+                    <div class="field-group">
+                        <label class="field-label" for="digiMobile" data-i18n="mobile_aadhaar">Mobile / Aadhaar Number</label>
+                        <div class="phone-input-wrap">
+                            <div class="phone-prefix" style="padding:11px 12px">🔗</div>
+                            <input class="phone-number" type="text" id="digiMobile"
+                                placeholder="Linked mobile or Aadhaar" data-i18n-placeholder="placeholder_linked_mobile">
+                        </div>
+                    </div>
+                    <button class="btn-digi-connect" id="btnDigiConnect">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        <span data-i18n="connect_digilocker">Connect with DigiLocker</span>
+                    </button>
+                </div>
+
+                <!-- Card footer -->
+                <div class="login-card-footer">
+                    <p class="register-link"><span data-i18n="new_user_register">New user?</span> <a href="#" data-i18n="register_here">Register here</a></p>
+                    <div class="card-foot-links">
+                        <a href="#" data-i18n="help_desk">Help Desk</a>
+                        <span class="card-foot-sep">·</span>
+                        <a href="#" data-i18n="privacy_policy">Privacy Policy</a>
+                        <span class="card-foot-sep">·</span>
+                        <a href="#" data-i18n="security_faq">Security FAQ</a>
+                    </div>
+                </div>
+
+            </div><!-- /login-right -->
+        </div><!-- /login-card -->
+    </div><!-- /page-body -->
+
+    <!-- SITE FOOTER -->
+    <footer class="site-footer" role="contentinfo">
+        <div class="footer-bottom">
+            <div style="display:flex;align-items:center;gap:12px">
+                <div class="footer-tricolor" aria-hidden="true"></div>
+                <span class="footer-copy" data-i18n="footer_copy_login">&copy; 2025 Ministry of Electronics &amp; Information Technology, Government
+                    of India.</span>
+            </div>
+            <div class="footer-motto" data-i18n="footer_motto">Secure &bull; Transparent &bull; Sovereign</div>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            // ── Dark mode toggle ──────────────────────────────────────
+            const html = document.documentElement;
+            const darkBtn = document.getElementById('darkToggle');
+            const darkIcon = document.getElementById('darkIcon');
+
+            // Restore saved theme
+            if (localStorage.getItem('digiid-theme') === 'dark') {
+                html.setAttribute('data-theme', 'dark');
+                darkIcon.textContent = '☀️';
+                darkBtn.childNodes[1].textContent = ' Light Mode';
+            }
+
+            darkBtn.addEventListener('click', () => {
+                const isDark = html.getAttribute('data-theme') === 'dark';
+                html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+                localStorage.setItem('digiid-theme', isDark ? 'light' : 'dark');
+                darkIcon.textContent = isDark ? '🌙' : '☀️';
+                darkBtn.childNodes[1].textContent = isDark ? ' Dark Mode' : ' Light Mode';
+            });
+
+            // ── Method tabs ────────────────────────────────────────────
+            const tabOtp = document.getElementById('tab-otp');
+            const tabDigi = document.getElementById('tab-digi');
+            const panelOtp = document.getElementById('panel-otp');
+            const panelDigi = document.getElementById('panel-digi');
+
+            tabOtp.addEventListener('click', () => {
+                tabOtp.classList.add('active'); tabOtp.setAttribute('aria-selected', 'true');
+                tabDigi.classList.remove('active'); tabDigi.setAttribute('aria-selected', 'false');
+                panelOtp.style.display = '';
+                panelDigi.classList.remove('active');
+            });
+            tabDigi.addEventListener('click', () => {
+                tabDigi.classList.add('active'); tabDigi.setAttribute('aria-selected', 'true');
+                tabOtp.classList.remove('active'); tabOtp.setAttribute('aria-selected', 'false');
+                panelDigi.classList.add('active');
+                panelOtp.style.display = 'none';
+            });
+
+            // DigiLocker button in OTP panel also switches to the DigiLocker tab
+            document.getElementById('btnDigiLocker2')?.addEventListener('click', () => tabDigi.click());
+
+            // ── Error / Success helpers ────────────────────────────────
+            const errEl = document.getElementById('loginError');
+            const succEl = document.getElementById('loginSuccess');
+            const succMsg = document.getElementById('loginSuccessMsg');
+            function showErr(msg) { errEl.textContent = '⚠ ' + msg; errEl.style.display = 'block'; succEl.style.display = 'none'; }
+            function showSucc(msg) { succMsg.textContent = msg; succEl.style.display = 'flex'; errEl.style.display = 'none'; }
+            function clearMsgs() { errEl.style.display = 'none'; succEl.style.display = 'none'; }
+
+            // ── OTP Flow ───────────────────────────────────────────────
+            let timerInterval = null;
+            const stepMobile = document.getElementById('step-mobile');
+            const stepOtp = document.getElementById('step-otp');
+            const maskedEl = document.getElementById('maskedNumber');
+            const timerEl = document.getElementById('otpTimer');
+            const resendEl = document.getElementById('resendOtp');
+            const otpDigits = document.querySelectorAll('.otp-digit');
+
+            // OTP digit — auto-advance + backspace
+            otpDigits.forEach((digit, i) => {
+                digit.addEventListener('input', function () {
+                    this.value = this.value.replace(/\D/g, '');
+                    if (this.value && i < otpDigits.length - 1) otpDigits[i + 1].focus();
+                });
+                digit.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && i > 0) otpDigits[i - 1].focus();
+                });
+                digit.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                    paste.split('').forEach((ch, idx) => { if (otpDigits[idx]) otpDigits[idx].value = ch; });
+                    const nextEmpty = [...otpDigits].findIndex(d => !d.value);
+                    (nextEmpty !== -1 ? otpDigits[nextEmpty] : otpDigits[5]).focus();
+                });
+            });
+
+            function startTimer(seconds) {
+                clearInterval(timerInterval);
+                timerEl.textContent = seconds + 's';
+                resendEl.style.pointerEvents = 'none';
+                resendEl.style.opacity = '0.45';
+                timerInterval = setInterval(() => {
+                    seconds--;
+                    timerEl.textContent = seconds + 's';
+                    if (seconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerEl.textContent = '';
+                        resendEl.style.pointerEvents = '';
+                        resendEl.style.opacity = '1';
+                        resendEl.textContent = 'Resend OTP';
+                    }
+                }, 1000);
+            }
+
+            function getMobile() { return document.getElementById('mobileNumber').value.trim(); }
+            function maskMobile(num) { return num.slice(0, 2) + '●●●●●●' + num.slice(-2); }
+
+            document.getElementById('btnRequestOtp')?.addEventListener('click', () => {
+                clearMsgs();
+                const mob = getMobile();
+                if (!/^\d{10}$/.test(mob)) { showErr('Please enter a valid 10-digit mobile number.'); return; }
+
+                maskedEl.textContent = maskMobile(mob);
+                stepMobile.style.display = 'none';
+                stepOtp.style.display = '';
+                otpDigits[0].focus();
+                startTimer(30);
+                showSucc('OTP sent to +91 ' + maskMobile(mob) + '. (Demo: enter any 6-digit code)');
+            });
+
+            resendEl?.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearMsgs();
+                otpDigits.forEach(d => d.value = '');
+                startTimer(30);
+                showSucc('OTP resent. (Demo: enter any 6-digit code)');
+                otpDigits[0].focus();
+            });
+
+            document.getElementById('changeMobile')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                stepOtp.style.display = 'none';
+                stepMobile.style.display = '';
+                clearInterval(timerInterval);
+                clearMsgs();
+                otpDigits.forEach(d => d.value = '');
+            });
+
+            document.getElementById('btnVerifyOtp')?.addEventListener('click', () => {
+                clearMsgs();
+                const entered = [...otpDigits].map(d => d.value).join('');
+                if (entered.length < 6) { showErr('Please enter the complete 6-digit OTP.'); return; }
+
+                // Demo: any 6-digit OTP is accepted
+                const btn = document.getElementById('btnVerifyOtp');
+                btn.disabled = true;
+                btn.textContent = 'Verifying…';
+                showSucc('OTP verified! Redirecting to dashboard…');
+
+                // Set session and redirect
+                sessionStorage.setItem('digiid_auth', '1');
+                setTimeout(() => { window.location.href = '/index.html'; }, 1400);
+            });
+
+            // ── DigiLocker connect (demo) ──────────────────────────────
+            document.getElementById('btnDigiConnect')?.addEventListener('click', () => {
+                clearMsgs();
+                const val = document.getElementById('digiMobile').value.trim();
+                if (!val) { showErr('Please enter your linked mobile or Aadhaar number.'); return; }
+                showSucc('Connecting to DigiLocker… (Demo: redirecting to dashboard)');
+                sessionStorage.setItem('digiid_auth', '1');
+                setTimeout(() => { window.location.href = '/index.html'; }, 1400);
+            });
+
+            // ── Language switcher ──────────────────────────────────────
+            const langSelect = document.getElementById('langSelect');
+            if (langSelect) {
+                // Set dropdown to stored lang
+                const storedLang = localStorage.getItem('digiid-lang') || 'en';
+                langSelect.value = storedLang;
+                // Apply translations on load
+                if (typeof applyTranslations === 'function') applyTranslations(storedLang);
+
+                langSelect.addEventListener('change', (e) => {
+                    const lang = e.target.value;
+                    localStorage.setItem('digiid-lang', lang);
+                    if (typeof applyTranslations === 'function') applyTranslations(lang);
+                });
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
