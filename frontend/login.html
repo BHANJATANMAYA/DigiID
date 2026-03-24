@@ -1037,7 +1037,7 @@
                     <option value="hi">हिन्दी</option>
                 </select>
                 <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode">
-                    <span id="darkIcon">🌙</span> Dark Mode
+                    <span id="darkIcon">🌙</span>
                 </button>
             </div>
         </div>
@@ -1319,7 +1319,6 @@
             if (localStorage.getItem('digiid-theme') === 'dark') {
                 html.setAttribute('data-theme', 'dark');
                 darkIcon.textContent = '☀️';
-                darkBtn.childNodes[1].textContent = ' Light Mode';
             }
 
             darkBtn.addEventListener('click', () => {
@@ -1327,7 +1326,6 @@
                 html.setAttribute('data-theme', isDark ? 'light' : 'dark');
                 localStorage.setItem('digiid-theme', isDark ? 'light' : 'dark');
                 darkIcon.textContent = isDark ? '🌙' : '☀️';
-                darkBtn.childNodes[1].textContent = isDark ? ' Dark Mode' : ' Light Mode';
             });
 
             // ── Method tabs ────────────────────────────────────────────

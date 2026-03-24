@@ -15,8 +15,8 @@ if (!privateKey) {
 const wallet = privateKey ? new ethers.Wallet(privateKey, provider) : null;
 
 // 3. Load Contract ABI and Address
-const artifactsPath = path.join(__dirname, '..', '..', '..', 'blockchain', 'artifacts', 'contracts', 'IdentityLedger.sol', 'IdentityLedger.json');
-const addressPath = path.join(__dirname, '..', '..', '..', 'blockchain', 'deployedAddress.json');
+const artifactsPath = path.join(__dirname, '..', '..', '..', '..', 'blockchain', 'artifacts', 'contracts', 'IdentityLedger.sol', 'IdentityLedger.json');
+const addressPath = path.join(__dirname, '..', '..', '..', '..', 'blockchain', 'deployedAddress.json');
 
 let contract = null;
 

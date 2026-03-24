@@ -12,6 +12,19 @@
     }
     if (localStorage.getItem('digiid-theme') === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
+        const dIcon = document.getElementById('darkIcon');
+        if (dIcon) dIcon.textContent = '☀️';
+    }
+
+    const darkToggle = document.getElementById('darkToggle');
+    if (darkToggle) {
+        darkToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('digiid-theme', isDark ? 'light' : 'dark');
+            const dIcon = document.getElementById('darkIcon');
+            if (dIcon) dIcon.textContent = isDark ? '🌙' : '☀️';
+        });
     }
 
     // ── i18n: Apply language on load ─────────────────────────────
@@ -450,7 +463,7 @@
                     iframe.style.borderRadius = '12px';
                     iframe.style.background = '#e8e4dc';
                     certModalContent.appendChild(iframe);
-                    
+
                     const doc = iframe.contentWindow.document;
                     doc.open();
                     // Hide the action-row inside the injected cert (we have our own outside)
