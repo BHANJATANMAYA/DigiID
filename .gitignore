@@ -1,23 +1,34 @@
-# Ignore dependencies
+# Dependencies
 node_modules/
 
-# Ignore environment variables
+# Environment Variables
 .env
+.env.*
 
-# Ignore logs
+# Logs
+logs
 *.log
 npm-debug.log*
 
-# Ignore OS files
+# Operating System Files
 .DS_Store
 Thumbs.db
 
-# Ignore IDE files
+# IDEs and Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Ignore build files
+# Build and Distribution
 dist/
 build/
+out/
+
+# Hardhat / Blockchain Files
+blockchain/artifacts/
+blockchain/cache/
+blockchain/typechain/
+blockchain/typechain-types/
+blockchain/coverage/
+blockchain/coverage.json
