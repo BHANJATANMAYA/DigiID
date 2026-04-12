@@ -227,7 +227,11 @@
       "><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='width:14px;height:14px'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'/><polyline points='14 2 14 8 20 8'/></svg> View Certificate</button>` : ''}`;
 
         if (docCardsList) docCardsList.appendChild(card);
-        submittedDocs.add(docType);
+        if (identityNo) {
+            submittedDocs.add(identityNo);
+        } else {
+            submittedDocs.add(docType);
+        }
         if (submittedDocs.size >= MAX_DOCS && vaultSecured) vaultSecured.style.display = 'flex';
     }
 
@@ -260,7 +264,9 @@
             }
 
             const docType = getActiveDocType();
-            if (submittedDocs.has(docType)) {
+            const identity_no = ($('enrollment')?.value || '').replace(/[^a-zA-Z0-9]/g, '').trim();
+
+            if (submittedDocs.has(identity_no)) {
                 showError(`${DOC_META[docType].label} ${t('already_anchored_session')}`);
                 return;
             }
@@ -268,7 +274,7 @@
             const payload = {
                 doc_type: docType,
                 name: $('name')?.value.trim(),
-                identity_no: $('enrollment')?.value.trim(),
+                identity_no: identity_no,
                 dob: $('dob')?.value,
                 authority: $('institute')?.value || DOC_FIELDS[docType].authority,
                 address: $('address')?.value.trim() || '',
@@ -343,7 +349,7 @@
             if (verifyResult) verifyResult.classList.remove('show');
             if (verifyErrEl) { verifyErrEl.style.display = 'none'; verifyErrEl.textContent = ''; }
 
-            const identity_no = $('verifyEnrollment')?.value.trim();
+            const identity_no = ($('verifyEnrollment')?.value || '').replace(/[^a-zA-Z0-9]/g, '').trim();
             const dob = $('verifyDob')?.value;
             const doc_type = document.querySelector('#verifyDocType')?.value || 'aadhaar';
 

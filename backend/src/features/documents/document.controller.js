@@ -3,6 +3,15 @@ const { generateHash } = require('./hashGenerator');
 const { validateDocument } = require('./validator');
 const { anchorHashOnChain, revokeHashOnChain, verifyHashOnChain } = require('../../core/config/blockchain');
 
+/**
+ * Normalize an identity number by stripping ALL non-alphanumeric characters
+ * and converting to uppercase. This ensures consistent matching across
+ * anchor, verify, update, and delete flows.
+ */
+function normalizeId(raw) {
+    return raw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
+
 const DOC_LABELS = {
     aadhaar: 'Aadhaar Card',
     pan: 'PAN Card',
@@ -22,7 +31,7 @@ async function anchorDocument(req, res, next) {
             return res.status(400).json({ success: false, errors: validation.errors });
         }
 
-        const cleanId = identity_no.replace(/\s/g, '').toUpperCase();
+        const cleanId = normalizeId(identity_no);
         const hash = generateHash(cleanId, dob, doc_type);
 
         const result = await pool.query(
@@ -107,7 +116,7 @@ async function verifyDocument(req, res, next) {
             return res.status(400).json({ success: false, error: 'identity_no, dob and doc_type are required' });
         }
 
-        const cleanId = identity_no.replace(/\s/g, '').toUpperCase();
+        const cleanId = normalizeId(identity_no);
 
         const result = await pool.query(
             `SELECT id, doc_type, name, authority, hash, anchored_at
@@ -164,7 +173,7 @@ async function getStats(req, res, next) {
  */
 async function getDocumentByIdentity(req, res, next) {
     try {
-        const cleanId = req.params.identity_no.replace(/\s/g, '').toUpperCase();
+        const cleanId = normalizeId(req.params.identity_no);
 
         const result = await pool.query(
             `SELECT id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at
@@ -192,7 +201,7 @@ async function getDocumentByIdentity(req, res, next) {
  */
 async function updateDocument(req, res, next) {
     try {
-        const cleanId = req.params.identity_no.replace(/\s/g, '').toUpperCase();
+        const cleanId = normalizeId(req.params.identity_no);
         const { name, dob, authority, address } = req.body;
 
         // Check the document exists
@@ -241,7 +250,7 @@ async function updateDocument(req, res, next) {
  */
 async function deleteDocument(req, res, next) {
     try {
-        const cleanId = req.params.identity_no.replace(/\s/g, '').toUpperCase();
+        const cleanId = normalizeId(req.params.identity_no);
 
         const result = await pool.query(
             `DELETE FROM gov_documents WHERE identity_no = $1 RETURNING id, doc_type, name, identity_no, hash;`,
@@ -277,7 +286,7 @@ async function deleteDocument(req, res, next) {
  */
 async function blockchainVerify(req, res, next) {
     try {
-        const cleanId = req.params.identity_no.replace(/\s/g, '').toUpperCase();
+        const cleanId = normalizeId(req.params.identity_no);
 
         const result = await pool.query(
             `SELECT id, doc_type, name, identity_no, dob, authority, hash, anchored_at

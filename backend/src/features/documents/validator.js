@@ -25,7 +25,7 @@ function validateDocument(data) {
     if (!data.identity_no || typeof data.identity_no !== 'string') {
         errors.push('Identity number is required');
     } else {
-        const clean = data.identity_no.replace(/\s/g, '').toUpperCase();
+        const clean = data.identity_no.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
         const rule = IDENTITY_RULES[data.doc_type];
         if (rule && !rule.pattern.test(clean)) {
             errors.push(rule.label);

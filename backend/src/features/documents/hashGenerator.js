@@ -9,7 +9,7 @@ const crypto = require('crypto');
  * @returns {string} 64-character hex hash
  */
 function generateHash(identityNo, dob, docType) {
-    const input = `${identityNo.replace(/\s/g, '')}|${dob}|${docType}`.toUpperCase();
+    const input = `${identityNo.replace(/[^a-zA-Z0-9]/g, '')}|${dob}|${docType}`.toUpperCase();
     return crypto.createHash('sha256').update(input).digest('hex');
 }
 
