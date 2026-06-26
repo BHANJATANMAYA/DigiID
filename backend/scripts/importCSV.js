@@ -6,11 +6,11 @@
 // Usage: node scripts/importCSV.js <path-to-csv-file>
 // Example: node scripts/importCSV.js data/sample_documents.csv
 
-require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const pool = require('../src/config/database');
-const { generateHash } = require('../src/utils/hashGenerator');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const pool = require('../src/core/config/database');
+const { generateHash } = require('../src/features/documents/hashGenerator');
 
 const VALID_DOC_TYPES = ['aadhaar', 'pan', 'voter'];
 
