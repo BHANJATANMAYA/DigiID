@@ -21,20 +21,28 @@ const DOC_LABELS = {
 /**
  * POST /api/documents
  * Anchor a new government identity document to the ledger.
+ *
+ * Issue #3 & #4: Uses a DB transaction. If blockchain anchoring fails,
+ * the DB insert is rolled back and the API returns an error.
  */
 async function anchorDocument(req, res, next) {
+    const client = await pool.connect();
     try {
         const { doc_type, name, identity_no, dob, authority, address } = req.body;
 
         const validation = validateDocument({ doc_type, name, identity_no, dob, authority });
         if (!validation.isValid) {
+            client.release();
             return res.status(400).json({ success: false, errors: validation.errors });
         }
 
         const cleanId = normalizeId(identity_no);
         const hash = generateHash(cleanId, dob, doc_type);
 
-        const result = await pool.query(
+        // ── Begin transaction ─────────────────────────────────────────────
+        await client.query('BEGIN');
+
+        const result = await client.query(
             `INSERT INTO gov_documents (doc_type, name, identity_no, dob, authority, address, hash)
              VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at;`,
@@ -43,11 +51,18 @@ async function anchorDocument(req, res, next) {
 
         const doc = result.rows[0];
 
-        // Blockchain Integration: Anchor hash on-chain
-        const identityRef = cleanId.slice(-4);
-        const chainResult = await anchorHashOnChain(hash, doc_type, identityRef);
-        const isAnchoredOnChain = chainResult.success;
-        const blockNumber = chainResult.blockNumber;
+        // Blockchain Integration: Anchor hash on-chain (no identityRef — Issue #7)
+        const chainResult = await anchorHashOnChain(hash, doc_type);
+
+        if (!chainResult.success) {
+            // Issue #3: Rollback DB insert if blockchain fails
+            await client.query('ROLLBACK');
+            client.release();
+            return res.status(503).json({
+                success: false,
+                error: 'Blockchain anchoring failed. The document was NOT saved. Please ensure the Hardhat node is running and the contract is deployed.',
+            });
+        }
 
         // Generate certificate ID: CERT-YYYY-DTLAST4-RAND4
         const anchorYear = new Date(doc.anchored_at).getFullYear();
@@ -57,11 +72,15 @@ async function anchorDocument(req, res, next) {
         const certId = `CERT-${anchorYear}-${docPrefix}${last4}-${rand4}`;
 
         // Persist block_number and cert_id back to the DB row
-        const updated = await pool.query(
+        const updated = await client.query(
             `UPDATE gov_documents SET block_number = $1, cert_id = $2 WHERE id = $3
              RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at, block_number, cert_id;`,
-            [blockNumber, certId, doc.id]
+            [chainResult.blockNumber, certId, doc.id]
         );
+
+        // ── Commit transaction ────────────────────────────────────────────
+        await client.query('COMMIT');
+        client.release();
 
         const finalDoc = updated.rows[0];
 
@@ -69,9 +88,12 @@ async function anchorDocument(req, res, next) {
             success: true,
             message: `${DOC_LABELS[doc_type] || 'Document'} anchored to the government ledger`,
             data: finalDoc,
-            blockchainAnchored: isAnchoredOnChain
+            blockchainAnchored: true
         });
     } catch (err) {
+        await client.query('ROLLBACK').catch(() => {});
+        client.release();
+
         if (err.code === '23505') {
             return res.status(409).json({
                 success: false,

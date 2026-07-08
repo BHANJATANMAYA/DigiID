@@ -3,12 +3,15 @@ pragma solidity ^0.8.20;
 
 contract IdentityLedger {
     address public owner;
-    uint256 public totalAnchored;
+    uint256 public totalAnchored;   // Historical count — never decrements
+    uint256 public totalActive;     // Active (non-revoked) count
+
+    // Gas-efficient enum instead of string comparison
+    enum DocType { Aadhaar, Pan, Voter }
 
     struct DocumentRecord {
         bytes32 hash;
-        string docType;
-        string identityRef;
+        DocType docType;
         uint256 anchoredAt;
         bool isRevoked;
         uint256 revokedAt;
@@ -16,7 +19,7 @@ contract IdentityLedger {
 
     mapping(bytes32 => DocumentRecord) private ledger;
 
-    event DocumentAnchored(bytes32 indexed hash, string docType, string identityRef, uint256 anchoredAt);
+    event DocumentAnchored(bytes32 indexed hash, DocType docType, uint256 anchoredAt);
     event DocumentRevoked(bytes32 indexed hash, uint256 revokedAt);
     event OwnershipTransferred(address indexed oldOwner, address indexed newOwner);
 
@@ -29,48 +32,40 @@ contract IdentityLedger {
         owner = msg.sender;
     }
 
-    function anchorDocument(bytes32 hash, string memory docType, string memory identityRef) external onlyOwner {
+    function anchorDocument(bytes32 hash, DocType docType) external onlyOwner {
         require(ledger[hash].anchoredAt == 0, "Hash already anchored");
-        
-        bool isValidDocType = keccak256(bytes(docType)) == keccak256(bytes("aadhaar")) ||
-                              keccak256(bytes(docType)) == keccak256(bytes("pan")) ||
-                              keccak256(bytes(docType)) == keccak256(bytes("voter"));
-        
-        require(isValidDocType, "Invalid document type");
 
         ledger[hash] = DocumentRecord({
             hash: hash,
             docType: docType,
-            identityRef: identityRef,
             anchoredAt: block.timestamp,
             isRevoked: false,
             revokedAt: 0
         });
 
         totalAnchored++;
-        emit DocumentAnchored(hash, docType, identityRef, block.timestamp);
+        totalActive++;
+        emit DocumentAnchored(hash, docType, block.timestamp);
     }
 
     function verifyDocument(bytes32 hash) external view returns (
         bool exists,
         bool isRevoked,
-        string memory docType,
-        string memory identityRef,
+        DocType docType,
         uint256 anchoredAt,
         uint256 revokedAt
     ) {
         DocumentRecord memory record = ledger[hash];
         exists = record.anchoredAt != 0;
-        
+
         if (!exists) {
-            return (false, false, "", "", 0, 0);
+            return (false, false, DocType.Aadhaar, 0, 0);
         }
 
         return (
             true,
             record.isRevoked,
             record.docType,
-            record.identityRef,
             record.anchoredAt,
             record.revokedAt
         );
@@ -82,6 +77,7 @@ contract IdentityLedger {
 
         ledger[hash].isRevoked = true;
         ledger[hash].revokedAt = block.timestamp;
+        totalActive--;
 
         emit DocumentRevoked(hash, block.timestamp);
     }
@@ -96,6 +92,10 @@ contract IdentityLedger {
 
     function getTotalAnchored() external view returns (uint256) {
         return totalAnchored;
+    }
+
+    function getTotalActive() external view returns (uint256) {
+        return totalActive;
     }
 
     function transferOwnership(address newOwner) external onlyOwner {
