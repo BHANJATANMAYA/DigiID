@@ -26,7 +26,8 @@ build/
 out/
 
 # Hardhat / Blockchain Files
-blockchain/artifacts/
+# NOTE: artifacts/ and deployedAddress.json are intentionally committed so
+# that the Render backend can read the contract ABI and deployed address.
 blockchain/cache/
 blockchain/typechain/
 blockchain/typechain-types/

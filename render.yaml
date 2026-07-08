@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: digiid-verify
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # ── Database (Supabase) ──────────────────────────────
+      # Paste your Supabase connection string here in the Render dashboard
+      - key: DATABASE_URL
+        sync: false
+      # ── Blockchain ───────────────────────────────────────
+      # Paste your Alchemy Sepolia RPC URL
+      - key: BLOCKCHAIN_RPC_URL
+        sync: false
+      # Paste the private key of the wallet that deployed the contract
+      - key: BLOCKCHAIN_PRIVATE_KEY
+        sync: false
+      # ── Auth (Mock) ──────────────────────────────────────
+      # Set this to a long random string in the Render dashboard
+      - key: AUTH_TOKEN
+        sync: false
