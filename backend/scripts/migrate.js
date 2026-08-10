@@ -18,7 +18,7 @@ const sql = fs.readFileSync(path.join(__dirname, '..', 'database', 'schema.sql')
     try {
         console.log('🔄  Running schema migration…');
         await pool.query(sql);
-        console.log('✅  gov_documents table created (students table dropped if existed)');
+        console.log('✅  gov_documents table created / updated successfully');
     } catch (err) {
         console.error('❌  Migration failed:', err.message);
         process.exit(1);

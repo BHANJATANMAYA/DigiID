@@ -14,7 +14,7 @@ const DOC_TYPE_ENUM = { aadhaar: 0, pan: 1, voter: 2 };
 const artifactsPath = path.join(__dirname, '..', '..', '..', '..', 'blockchain', 'artifacts', 'contracts', 'IdentityLedger.sol', 'IdentityLedger.json');
 const addressPath = path.join(__dirname, '..', '..', '..', '..', 'blockchain', 'deployedAddress.json');
 
-// ── Lazy Initialisation (Issue #12: reconnect-capable) ────────────────────────
+// ── Lazy Initialisation ───────────────────────────────────────────────────────
 
 let _provider = null;
 let _wallet = null;
@@ -28,7 +28,7 @@ function getConnection() {
     // Re-create provider on every call so a Hardhat restart is handled
     _provider = new ethers.JsonRpcProvider(rpcUrl);
 
-    // Issue #2: unified env var (matches .env.example)
+    // Read private key from BLOCKCHAIN_PRIVATE_KEY
     const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
     if (!privateKey) {
         console.warn('⚠️ BLOCKCHAIN_PRIVATE_KEY is not set. Blockchain writes will fail.');
@@ -62,7 +62,7 @@ function getConnection() {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
- * Issue #11: Strict bytes32 formatting.
+ * Strict bytes32 formatting.
  * SHA-256 must be exactly 64 hex chars. Throws on invalid input
  * instead of silently zero-padding.
  */

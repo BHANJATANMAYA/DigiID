@@ -1,7 +1,4 @@
 -- DigiID Verify — Government ID Documents Schema
--- Drop old student table, create new gov_documents table
-
-DROP TABLE IF EXISTS students;
 
 CREATE TABLE IF NOT EXISTS gov_documents (
   id           SERIAL PRIMARY KEY,

@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "public": true,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/verify/(?<cert_id>[^/]+)",
+      "dest": "/api/verify/$cert_id"
+    },
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/documents/anchor",
+      "dest": "/api/documents/anchor.js"
+    },
+    {
+      "src": "/api/documents/revoke",
+      "dest": "/api/documents/revoke.js"
+    },
+    {
+      "src": "/api/certificates/(?<identity_no>[^/]+)",
+      "dest": "/api/certificates/index.js?identity_no=$identity_no"
+    },
+    {
+      "src": "/api/documents",
+      "dest": "/api/documents/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ]
+}

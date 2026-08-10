@@ -9,8 +9,8 @@
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const pool = require('../src/config/database');
-const { generateHash } = require('../src/utils/hashGenerator');
+const pool = require('../src/core/config/database');
+const { generateHash } = require('../src/features/documents/hashGenerator');
 
 const VALID_DOC_TYPES = ['aadhaar', 'pan', 'voter'];
 

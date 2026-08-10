@@ -6,7 +6,14 @@
     'use strict';
 
     // ── Session guard ─────────────────────────────────────────────
-    if (!sessionStorage.getItem('digiid_auth')) {
+    if (window.supabaseClient) {
+        window.supabaseClient.auth.getSession().then(function (res) {
+            var session = res && res.data ? res.data.session : null;
+            if (!session && !sessionStorage.getItem('digiid_auth')) {
+                window.location.replace('/login.html');
+            }
+        });
+    } else if (!sessionStorage.getItem('digiid_auth')) {
         window.location.replace('/login.html');
         return;
     }
@@ -197,7 +204,7 @@
         if (verifyCard) verifyCard.classList.add('visible');
 
         const card = document.createElement('div');
-        card.className = 'doc-card' + (animate ? '' : '');
+        card.className = 'doc-card';
         card.dataset.docType = docType;
         card.innerHTML = `
       <div class="doc-card-top">

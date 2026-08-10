@@ -4,6 +4,7 @@ node_modules/
 # Environment Variables
 .env
 .env.*
+!.env.example
 
 # Logs
 logs
@@ -27,9 +28,14 @@ out/
 
 # Hardhat / Blockchain Files
 # NOTE: artifacts/ and deployedAddress.json are intentionally committed so
-# that the Render backend can read the contract ABI and deployed address.
+# that backend can read the contract ABI and deployed address.
 blockchain/cache/
 blockchain/typechain/
 blockchain/typechain-types/
 blockchain/coverage/
 blockchain/coverage.json
+
+# Local AI Agent Extensions
+.agents/
+skills-lock.json
+

@@ -18,7 +18,7 @@ async function syncAll() {
             if (chainResult.success) {
                 console.log(`✅ Synced block: ${chainResult.blockNumber}`);
 
-                // Issue #5: Write block_number back to DB
+                // Write block_number back to DB if returned
                 if (chainResult.blockNumber) {
                     await pool.query(
                         'UPDATE gov_documents SET block_number = $1 WHERE id = $2',

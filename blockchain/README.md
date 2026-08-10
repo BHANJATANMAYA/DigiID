@@ -20,11 +20,11 @@ This folder contains the Hardhat blockchain environment for the DigiID Verify pr
    *Note: Ensure Hardhat is installed globally with `npm install -g hardhat` or run it via `npx hardhat`.*
 
 3. Setup environment variables:
-   Copy `.env.example` (or `.env` template) to `.env` and configure your `HARDHAT_PRIVATE_KEY`
+   Copy `.env.example` to `.env` and configure your `BLOCKCHAIN_PRIVATE_KEY` and `BLOCKCHAIN_RPC_URL`:
    ```bash
    cp .env.example .env
    ```
-   *(For local testing, Hardhat accounts will be used automatically without .env).*
+   *(For local testing, Hardhat built-in accounts will be used automatically without `.env`).*
 
 ## Commands
 
@@ -63,4 +63,4 @@ npx hardhat run scripts/interact.js --network localhost
 The main Node.js backend automatically integrates with this blockchain. 
 1. It reads the ABI from `blockchain/artifacts/contracts/IdentityLedger.sol/IdentityLedger.json`
 2. It reads the deployed address from `blockchain/deployedAddress.json`
-3. It connects using the `BLOCKCHAIN_RPC_URL` (usually `http://127.0.0.1:8545`) defined in the root `.env`.
+3. It connects using the `BLOCKCHAIN_RPC_URL` defined in `backend/.env`.

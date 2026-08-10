@@ -1,26 +1,27 @@
 # DigiID Verify — National Identity Verification Portal
 
-**DigiID Verify** is a secure, blockchain-powered platform for anchoring and verifying government identity documents (Aadhaar, PAN, Voter ID). It uses SHA-256 hashing, a PostgreSQL database, and a local Ethereum blockchain (Hardhat) to provide immutable on-chain verification and printable identity certificates.
+**DigiID Verify** is a secure, blockchain-powered platform for anchoring and verifying government identity documents (Aadhaar, PAN, Voter ID). It uses SHA-256 cryptographic hashing, a Supabase PostgreSQL database, and Ethereum smart contracts (Hardhat / Sepolia testnet) to provide immutable on-chain verification and printable identity certificates with QR codes.
 
 ---
 
 ## 🚀 Key Features
 
-- **Blockchain Anchoring**: Generate unique SHA-256 fingerprints for identity documents and anchor them to the Ethereum ledger.
+- **Blockchain Anchoring**: Generate unique SHA-256 fingerprints for identity documents and anchor them permanently to the Ethereum ledger (Sepolia / Local Hardhat).
 - **Identity Verification Certificates**: Generate printable, secure certificates with dynamic QR codes for instant verification.
-- **Public Verification Page**: A dedicated interface for third parties to verify document authenticity via Certificate ID or QR scan.
+- **Public Verification Portal**: Dedicated serverless interface for third parties to verify document authenticity via Certificate ID or QR scan.
+- **Supabase PostgreSQL & RLS**: Database secured with Row Level Security policies for verification.
 - **Multilingual Support**: Full English and Hindi (i18n) localization for a seamless citizen experience.
-- **Audit Trail**: Immutable recording of all anchoring events on the blockchain.
+- **Audit Trail**: Immutable recording of all document anchoring and revocation events on the blockchain.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Vanilla HTML5, CSS3 (Glassmorphism), and JavaScript.
-- **Backend**: Node.js & Express.js.
-- **Database**: PostgreSQL (Metadata & Hash storage).
-- **Blockchain**: Solidity Smart Contracts + Hardhat (Local Ethereum Network).
-- **Utilities**: `qrcode` for QR generation, `puppeteer` for PDF export, `ethers.js` for blockchain interaction.
+- **Frontend**: HTML5, Modern CSS3 (Glassmorphism), and Vanilla JavaScript.
+- **Backend & Serverless API**: Node.js, Express.js, Vercel Serverless Functions (`/api`).
+- **Database**: Supabase PostgreSQL with Row Level Security (RLS).
+- **Blockchain**: Solidity (`IdentityLedger.sol`), Hardhat, Ethers.js v6, Sepolia Testnet.
+- **Deployment Platform**: Vercel (Frontend & Serverless API).
 
 ---
 
@@ -31,90 +32,93 @@ Before you begin, ensure you have the following installed:
 | Tool | Version | Purpose |
 |---|---|---|
 | [Node.js](https://nodejs.org/) | v18+ | Backend runtime & tooling |
-| [PostgreSQL](https://www.postgresql.org/) | v12+ | Local database for metadata |
-| [Hardhat](https://hardhat.org/) | Latest | Local Ethereum blockchain simulation |
-| Git | Any | Version control |
+| [Supabase](https://supabase.com/) | Cloud | PostgreSQL Database & Storage |
+| [Hardhat](https://hardhat.org/) | Latest | Smart contract development & testing |
+| [Vercel CLI](https://vercel.com/cli) | Latest | Serverless deployment |
 
 ---
 
-## ⚙️ Project Setup
+## ⚙️ Environment Variables
 
-### 1. Install Dependencies
+Create `.env` files locally (which are strictly ignored by `.gitignore`).
 
-Install root and blockchain dependencies:
-```bash
-# Root dependencies
-npm install
-
-# Blockchain dependencies
-cd blockchain
-npm install
-cd ..
-```
-
-### 2. Database Configuration
-
-1. Create a PostgreSQL database named `identity_db`.
-2. Run the migration script to initialize tables:
-   ```bash
-   node backend/scripts/migrate.js
-   ```
-
-### 3. Environment Variables
-
-Create a `.env` file in the `backend/` directory:
+### Backend (`backend/.env`):
 ```env
 PORT=3000
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=identity_db
-DB_USER=your_username
-DB_PASSWORD=your_password
-BLOCKCHAIN_RPC_URL=http://127.0.0.1:8545
+
+# Supabase PostgreSQL Connection String
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@db.lrvjxqjfwomgnyfsliao.supabase.co:5432/postgres
+
+# Blockchain Connection (Sepolia Testnet or Local Hardhat Node)
+BLOCKCHAIN_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
+BLOCKCHAIN_PRIVATE_KEY=your_deployer_private_key_here
+
+# Auth Token Secret
+AUTH_TOKEN=digiid-secret
+```
+
+### Blockchain (`blockchain/.env`):
+```env
+BLOCKCHAIN_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_KEY
+BLOCKCHAIN_PRIVATE_KEY=your_deployer_private_key_here
 ```
 
 ---
 
-## 🏃 Running the Application
+## ☁️ Deploying to Vercel
 
-You will need **three separate terminals**:
+1. **Push your code to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Prepare DigiID for Vercel deployment"
+   git push origin main
+   ```
 
-### Terminal 1: Local Blockchain
-```bash
-cd blockchain
-npx hardhat node
-```
+2. **Import Project in Vercel**:
+   - Go to [Vercel Dashboard](https://vercel.com/new).
+   - Import your GitHub repository (`DigiID`).
+   - Keep Framework Preset as **Other** (Vercel automatically detects `vercel.json`).
 
-### Terminal 2: Smart Contract Deployment
-```bash
-cd blockchain
-npx hardhat run scripts/deploy.js --network localhost
-```
-*Note: This generates the contract address and ABI used by the backend.*
+3. **Set Environment Variables on Vercel**:
+   Add the following variables in **Project Settings → Environment Variables**:
+   * `DATABASE_URL`: Your Supabase PostgreSQL URI
+   * `BLOCKCHAIN_RPC_URL`: Your Sepolia RPC URL
+   * `BLOCKCHAIN_PRIVATE_KEY`: Your Wallet Private Key
+   * `AUTH_TOKEN`: `digiid-secret`
 
-### Terminal 3: Backend Server
-```bash
-npm start
-```
+4. **Deploy**:
+   Click **Deploy**. Vercel will build and host both your frontend interface and `/api` serverless endpoints.
 
 ---
 
-## 🌐 Usage
+## 🏃 Local Development
 
-1. Open `http://localhost:3000` in your browser.
-2. **Login**: Use Phone `9876543210` and OTP `123456` (Demo Mode).
-3. **Anchor**: Enter identity details and click **"Secure Details on Ledger"**.
-4. **Certificate**: Once anchored, click **"View Certificate"** to see your blockchain-verified document.
-5. **Verify**: Use the "Quick Identity Verify" tool on the dashboard or use the Public Verification page.
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   cd blockchain && npm install && cd ..
+   ```
+
+2. **Run Hardhat Unit Tests**:
+   ```bash
+   cd blockchain
+   npx hardhat test
+   ```
+
+3. **Run Local Dev Server**:
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000` in your browser.
 
 ---
 
 ## 🛡️ Security & Privacy
-- All identity numbers are masked (`XXXX XXXX 1234`) before being displayed or stored.
-- Only SHA-256 hashes are stored on the public blockchain, ensuring PII (Personally Identifiable Information) remains private.
-- Compliant with GIGW 3.0 and STQC architectural guidelines.
+
+- **Data Masking**: All identity numbers are masked (`XXXX XXXX 1234`) before display or storage.
+- **Privacy-Preserving On-Chain Hashing**: Only SHA-256 hashes are stored on the public blockchain — PII (Personally Identifiable Information) is never exposed on-chain.
+- **Row Level Security**: Database access is protected by Supabase RLS policies.
 
 ---
 
-© 2025 DigiID Verify. All Rights Reserved.
-
+© 2026 DigiID Verify. All Rights Reserved.

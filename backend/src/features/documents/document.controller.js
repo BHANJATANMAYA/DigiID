@@ -22,7 +22,7 @@ const DOC_LABELS = {
  * POST /api/documents
  * Anchor a new government identity document to the ledger.
  *
- * Issue #3 & #4: Uses a DB transaction. If blockchain anchoring fails,
+ * Uses a DB transaction. If blockchain anchoring fails,
  * the DB insert is rolled back and the API returns an error.
  */
 async function anchorDocument(req, res, next) {
@@ -51,11 +51,11 @@ async function anchorDocument(req, res, next) {
 
         const doc = result.rows[0];
 
-        // Blockchain Integration: Anchor hash on-chain (no identityRef — Issue #7)
+        // Blockchain Integration: Anchor hash on-chain
         const chainResult = await anchorHashOnChain(hash, doc_type);
 
         if (!chainResult.success) {
-            // Issue #3: Rollback DB insert if blockchain fails
+            // Rollback DB insert if blockchain fails
             await client.query('ROLLBACK');
             client.release();
             return res.status(503).json({
