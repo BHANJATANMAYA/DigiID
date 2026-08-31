@@ -1,7 +1,7 @@
-const { verifyHashOnChain } = require('../../../backend/src/core/config/blockchain');
-const { generateQRCode, buildCertificateHTML } = require('../../../backend/src/features/certificates/certificateGenerator');
-const { supabase } = require('../../../backend/src/core/config/supabase');
-const pool = require('../../../backend/src/core/config/database');
+const { verifyHashOnChain } = require('../../backend/src/core/config/blockchain');
+const { generateQRCode, buildCertificateHTML } = require('../../backend/src/features/certificates/certificateGenerator');
+const { supabase } = require('../../backend/src/core/config/supabase');
+const pool = require('../../backend/src/core/config/database');
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');

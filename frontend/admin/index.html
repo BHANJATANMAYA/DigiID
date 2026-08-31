@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — DigiID National Identity Admin Panel</title>
+    <meta name="description" content="Production Super Admin Management Portal for DigiID Government Verification System">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="tricolor-stripe"></div>
+
+    <div class="admin-app">
+        <!-- ── Sidebar ── -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏛️</div>
+                <div class="sidebar-title">
+                    <h1>DigiID Admin</h1>
+                    <span>National Identity Portal</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-target="view-dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" data-target="view-documents">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Identity Records
+                </div>
+                <div class="nav-item" data-target="view-blockchain">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    Blockchain Ledger
+                </div>
+                <div class="nav-item" data-target="view-audit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    Audit Logs
+                </div>
+                <div class="nav-item" data-target="view-settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    System Settings
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-profile">
+                    <div class="profile-avatar" id="avatarLetter">A</div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="adminUserEmail">admin@digiid.gov.in</div>
+                        <div class="profile-role">Super Admin</div>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="btn btn-outline" style="padding:4px 8px; font-size:11px;" title="Logout">
+                    🚪
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── Main Area ── -->
+        <main class="admin-main">
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <h2 id="currentViewTitle">Operational Dashboard</h2>
+                </div>
+                <div class="topbar-right">
+                    <button id="exportCsvBtn" class="btn btn-outline">
+                        📥 Export CSV
+                    </button>
+                    <button id="themeToggleBtn" class="btn btn-outline" title="Toggle Theme">
+                        🌓
+                    </button>
+                    <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--success); background:var(--success-bg); padding:4px 10px; border-radius:20px;">
+                        <span class="health-dot"></span> Live
+                    </div>
+                </div>
+            </header>
+
+            <!-- ── View 1: Dashboard ── -->
+            <section id="view-dashboard" class="content-view active">
+                <div class="health-bar" id="healthSummaryBar">
+                    <div class="health-item">
+                        <span class="health-dot" id="dbHealthDot"></span>
+                        <span>PostgreSQL DB: <strong id="dbHealthText">Checking…</strong></span>
+                    </div>
+                    <div class="health-item">
+                        <span class="health-dot" id="rpcHealthDot"></span>
+                        <span>Ethereum RPC: <strong id="rpcHealthText">Checking…</strong></span>
+                    </div>
+                    <div class="health-item">
+                        <span class="health-dot" id="apiHealthDot"></span>
+                        <span>REST API: <strong id="apiHealthText">Operational</strong></span>
+                    </div>
+                    <div class="health-item" style="color:var(--text-muted); font-size:11px;">
+                        Auto-sync: Every 30s
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card teal">
+                        <div class="stat-label">Total Registered</div>
+                        <div class="stat-value" id="statTotalDocs">0</div>
+                        <div class="stat-sub">Across Aadhaar, PAN & Voter ID</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-label">Active Anchors</div>
+                        <div class="stat-value" id="statActiveDocs">0</div>
+                        <div class="stat-sub">Valid on-chain identities</div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-label">Revoked Documents</div>
+                        <div class="stat-value" id="statRevokedDocs">0</div>
+                        <div class="stat-sub">Invalidated with recorded reason</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-label">Doc Types</div>
+                        <div class="stat-value" style="font-size:18px; font-weight:700; margin-top:6px;" id="statDocBreakdown">
+                            0 Aadhaar · 0 PAN · 0 Voter
+                        </div>
+                        <div class="stat-sub">Cryptographically signed</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div style="padding:16px 20px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="font-size:15px; font-weight:700;">Recent Identity Registrations</h3>
+                        <button class="btn btn-outline" style="font-size:11px; padding:4px 10px;" onclick="switchView('view-documents')">View All Records →</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Cert ID</th>
+                                <th>Type</th>
+                                <th>Holder Name</th>
+                                <th>Identity No (Masked)</th>
+                                <th>Issuing Authority</th>
+                                <th>Status</th>
+                                <th>Anchored</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentDocsTableBody">
+                            <tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Loading live data…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ── View 2: Identity Documents ── -->
+            <section id="view-documents" class="content-view">
+                <div class="filter-card">
+                    <input type="text" id="docSearchQuery" class="search-input" placeholder="Search by Cert ID, Name, Identity Number, or Hash…">
+                    <select id="filterDocType" class="filter-select">
+                        <option value="">All Document Types</option>
+                        <option value="aadhaar">Aadhaar Card</option>
+                        <option value="pan">PAN Card</option>
+                        <option value="voter">Voter Identity</option>
+                    </select>
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">All Statuses</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="REVOKED">Revoked</option>
+                        <option value="CORRECTED">Corrected</option>
+                    </select>
+                    <button id="applyFiltersBtn" class="btn btn-primary">Filter</button>
+                    <button id="resetFiltersBtn" class="btn btn-outline">Reset</button>
+                </div>
+
+                <div class="table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Cert ID</th>
+                                <th>Type</th>
+                                <th>Holder Name</th>
+                                <th>Identity No (PII)</th>
+                                <th>Status</th>
+                                <th>Version</th>
+                                <th>Anchored Date</th>
+                                <th style="text-align:right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="documentsTableBody">
+                            <tr><td colspan="8" style="text-align:center; padding:20px; color:var(--text-muted);">Loading documents…</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="padding:14px 20px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); font-size:12px;">
+                        <span id="docCountLabel">Showing 0 records</span>
+                        <div style="display:flex; gap:8px;">
+                            <button id="prevPageBtn" class="btn btn-outline" style="padding:4px 10px;">← Previous</button>
+                            <button id="nextPageBtn" class="btn btn-outline" style="padding:4px 10px;">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── View 3: Blockchain Ledger ── -->
+            <section id="view-blockchain" class="content-view">
+                <div class="stats-grid">
+                    <div class="stat-card teal">
+                        <div class="stat-label">Smart Contract Address</div>
+                        <div class="stat-value code-pill" id="bcContractAddress" style="font-size:13px; word-break:break-all; display:block; margin-top:8px;">
+                            0x5FbDB2315678afecb367f032d93F642f64180aa3
+                        </div>
+                        <div class="stat-sub">IdentityLedger.sol (ERC-165 Compliant)</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-label">Network & Chain ID</div>
+                        <div class="stat-value" style="font-size:18px;" id="bcNetworkName">Hardhat Localhost</div>
+                        <div class="stat-sub">Chain ID: 31337 · Port 8545</div>
+                    </div>
+                    <div class="stat-card orange">
+                        <div class="stat-label">Signing Wallet</div>
+                        <div class="stat-value" style="font-size:18px;">Backend Custodied</div>
+                        <div class="stat-sub">Private key NEVER exposed to browser</div>
+                    </div>
+                </div>
+
+                <div class="table-card" style="padding:24px; margin-bottom:24px;">
+                    <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Direct On-Chain Hash Verification</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">
+                        Query the Ethereum smart contract directly using a 64-character SHA-256 identity hash to inspect existence, active state, and timestamps.
+                    </p>
+                    <div style="display:flex; gap:12px;">
+                        <input type="text" id="directVerifyHashInput" class="search-input" placeholder="Enter 64-char SHA-256 hash (e.g., 9a4b...)">
+                        <button id="btnDirectVerify" class="btn btn-primary">Query Contract</button>
+                    </div>
+                    <div id="directVerifyResult" style="display:none; margin-top:16px; padding:16px; border-radius:6px; font-family:var(--font-mono); font-size:12px; line-height:1.6;"></div>
+                </div>
+            </section>
+
+            <!-- ── View 4: Audit Logs ── -->
+            <section id="view-audit" class="content-view">
+                <div class="filter-card">
+                    <select id="auditActionFilter" class="filter-select">
+                        <option value="">All Audit Actions</option>
+                        <option value="ADMIN_LOGIN">ADMIN_LOGIN</option>
+                        <option value="DOCUMENT_VIEWED">DOCUMENT_VIEWED</option>
+                        <option value="PII_REVEALED">PII_REVEALED</option>
+                        <option value="DOCUMENT_VERIFIED">DOCUMENT_VERIFIED</option>
+                        <option value="DOCUMENT_REVOKED">DOCUMENT_REVOKED</option>
+                        <option value="DOCUMENT_CORRECTED">DOCUMENT_CORRECTED</option>
+                        <option value="DOCUMENT_EXPORTED">DOCUMENT_EXPORTED</option>
+                        <option value="SETTINGS_CHANGED">SETTINGS_CHANGED</option>
+                    </select>
+                    <button id="refreshAuditBtn" class="btn btn-primary">Refresh Logs</button>
+                </div>
+
+                <div class="table-card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Event ID</th>
+                                <th>Timestamp</th>
+                                <th>Actor</th>
+                                <th>Action</th>
+                                <th>Resource</th>
+                                <th>Outcome</th>
+                                <th>Reason / Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody">
+                            <tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);">Loading audit timeline…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ── View 5: Settings ── -->
+            <section id="view-settings" class="content-view">
+                <div class="table-card" style="padding:28px; max-width:720px;">
+                    <h3 style="font-size:16px; font-weight:700; margin-bottom:16px;">Portal Configuration & Security Policies</h3>
+
+                    <form id="settingsForm">
+                        <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:14px;">
+                            <div>
+                                <strong style="font-size:13px;">Maintenance Mode</strong>
+                                <p style="font-size:11px; color:var(--text-muted);">Temporarily restrict citizen document registrations.</p>
+                            </div>
+                            <input type="checkbox" id="setMaintenance" style="width:18px; height:18px;">
+                        </div>
+
+                        <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:14px 0;">
+                            <div>
+                                <strong style="font-size:13px;">Public Certificate Verification</strong>
+                                <p style="font-size:11px; color:var(--text-muted);">Allow public scanning of QR codes and /verify/:cert_id without citizen login.</p>
+                            </div>
+                            <input type="checkbox" id="setPublicVerify" style="width:18px; height:18px;" checked>
+                        </div>
+
+                        <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:14px 0;">
+                            <div>
+                                <strong style="font-size:13px;">PII Masking by Default</strong>
+                                <p style="font-size:11px; color:var(--text-muted);">Enforce mask on all identity numbers (XXXX XXXX 1234) across admin views and exports.</p>
+                            </div>
+                            <input type="checkbox" id="setPiiMasking" style="width:18px; height:18px;" checked disabled>
+                        </div>
+
+                        <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding:14px 0;">
+                            <div>
+                                <strong style="font-size:13px;">Mandatory Revocation Reason</strong>
+                                <p style="font-size:11px; color:var(--text-muted);">Require admin to supply detailed reason for document invalidation.</p>
+                            </div>
+                            <input type="checkbox" id="setRequireReason" style="width:18px; height:18px;" checked disabled>
+                        </div>
+
+                        <div style="margin-top:24px; display:flex; justify-content:flex-end;">
+                            <button type="submit" class="btn btn-primary">Save Settings</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ── Modal: Revoke Document ── -->
+    <div id="revokeModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Revoke Identity Document</h3>
+                <button class="btn btn-outline" style="padding:2px 8px;" onclick="closeModals()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px; color:var(--danger); margin-bottom:16px;">
+                    ⚠️ This will mark the document as REVOKED on the blockchain and database. This action cannot be silently undone.
+                </p>
+                <div class="form-group">
+                    <label>Target Identity Number</label>
+                    <input type="text" id="revokeTargetId" class="form-control" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Mandatory Revocation Reason *</label>
+                    <textarea id="revokeReasonInput" class="form-control" rows="3" placeholder="State official reason (e.g. Identity cancelled by issuing authority, biometric mismatch, court order)" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+                <button id="confirmRevokeBtn" class="btn btn-danger">Confirm Revocation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Modal: Correct Document (Versioning) ── -->
+    <div id="correctModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Correct Anchored Identity (New Version)</h3>
+                <button class="btn btn-outline" style="padding:2px 8px;" onclick="closeModals()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+                    Corrections preserve history: old hash is marked CORRECTED, new hash is generated and anchored on-chain with incremented version.
+                </p>
+                <input type="hidden" id="correctTargetId">
+                <div class="form-group">
+                    <label>Holder Full Name</label>
+                    <input type="text" id="correctNameInput" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth (YYYY-MM-DD)</label>
+                    <input type="text" id="correctDobInput" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Issuing Authority</label>
+                    <input type="text" id="correctAuthorityInput" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Mandatory Correction Reason *</label>
+                    <textarea id="correctReasonInput" class="form-control" rows="2" placeholder="State official reason for correction (e.g. Typographical error in name on official certificate)" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+                <button id="confirmCorrectBtn" class="btn btn-primary">Apply Correction & Re-Anchor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Modal: Reveal PII ── -->
+    <div id="revealModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Authorized PII Reveal</h3>
+                <button class="btn btn-outline" style="padding:2px 8px;" onclick="closeModals()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">
+                    Viewing raw identity numbers creates an immutable <code>PII_REVEALED</code> audit log entry.
+                </p>
+                <div class="form-group">
+                    <label>Inquiry Reason</label>
+                    <input type="text" id="revealReasonInput" class="form-control" value="Official Administrative Identity Verification">
+                </div>
+                <div id="revealResultBox" style="display:none; padding:14px; background:var(--bg-page); border:1px solid var(--border-color); border-radius:6px; margin-top:14px;">
+                    <div style="font-size:11px; color:var(--text-muted);">Unmasked Identity Number:</div>
+                    <div id="revealResultNumber" style="font-size:18px; font-weight:800; font-family:var(--font-mono); margin-top:4px;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModals()">Close</button>
+                <button id="confirmRevealBtn" class="btn btn-primary">Confirm & Reveal</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

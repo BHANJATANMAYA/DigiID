@@ -37,6 +37,18 @@
       "dest": "/api/documents/index.js"
     },
     {
+      "src": "/admin/login",
+      "dest": "/frontend/admin/login.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/frontend/admin/login.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }

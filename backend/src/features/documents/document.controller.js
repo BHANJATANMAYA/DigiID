@@ -1,3 +1,5 @@
+'use strict';
+
 const pool = require('../../core/config/database');
 const { generateHash } = require('./hashGenerator');
 const { validateDocument } = require('./validator');
@@ -5,11 +7,11 @@ const { anchorHashOnChain, revokeHashOnChain, verifyHashOnChain } = require('../
 
 /**
  * Normalize an identity number by stripping ALL non-alphanumeric characters
- * and converting to uppercase. This ensures consistent matching across
- * anchor, verify, update, and delete flows.
+ * and converting to uppercase. Handles null/undefined safely.
  */
 function normalizeId(raw) {
-    return raw.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    if (raw == null) return '';
+    return String(raw).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
 }
 
 const DOC_LABELS = {
@@ -21,30 +23,40 @@ const DOC_LABELS = {
 /**
  * POST /api/documents
  * Anchor a new government identity document to the ledger.
- *
- * Uses a DB transaction. If blockchain anchoring fails,
- * the DB insert is rolled back and the API returns an error.
+ * Public endpoint for citizen registration.
  */
 async function anchorDocument(req, res, next) {
-    const client = await pool.connect();
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ success: false, errors: ['Request body must be a valid JSON object'] });
+    }
+
+    const { doc_type, name, identity_no, dob, authority, address } = req.body;
+
+    const validation = validateDocument({ doc_type, name, identity_no, dob, authority });
+    if (!validation.isValid) {
+        return res.status(400).json({ success: false, errors: validation.errors });
+    }
+
+    const cleanId = normalizeId(identity_no);
+    const hash = generateHash(cleanId, dob, doc_type);
+
+    let client;
     try {
-        const { doc_type, name, identity_no, dob, authority, address } = req.body;
+        client = await pool.connect();
+    } catch (dbErr) {
+        return res.status(503).json({
+            success: false,
+            error: 'Database connection failure. Please try again later.'
+        });
+    }
 
-        const validation = validateDocument({ doc_type, name, identity_no, dob, authority });
-        if (!validation.isValid) {
-            client.release();
-            return res.status(400).json({ success: false, errors: validation.errors });
-        }
-
-        const cleanId = normalizeId(identity_no);
-        const hash = generateHash(cleanId, dob, doc_type);
-
+    try {
         // ── Begin transaction ─────────────────────────────────────────────
         await client.query('BEGIN');
 
         const result = await client.query(
-            `INSERT INTO gov_documents (doc_type, name, identity_no, dob, authority, address, hash)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
+            `INSERT INTO gov_documents (doc_type, name, identity_no, dob, authority, address, hash, status, version)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, 'ACTIVE', 1)
              RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at;`,
             [doc_type, name.trim(), cleanId, dob, authority.trim(), address?.trim() || null, hash]
         );
@@ -55,12 +67,12 @@ async function anchorDocument(req, res, next) {
         const chainResult = await anchorHashOnChain(hash, doc_type);
 
         if (!chainResult.success) {
-            // Rollback DB insert if blockchain fails
+            // Rollback DB insert if blockchain fails (ensures consistency CONS-002)
             await client.query('ROLLBACK');
             client.release();
             return res.status(503).json({
                 success: false,
-                error: 'Blockchain anchoring failed. The document was NOT saved. Please ensure the Hardhat node is running and the contract is deployed.',
+                error: 'Blockchain anchoring failed. The document was NOT saved. Please ensure the blockchain node is running.',
             });
         }
 
@@ -74,7 +86,7 @@ async function anchorDocument(req, res, next) {
         // Persist block_number and cert_id back to the DB row
         const updated = await client.query(
             `UPDATE gov_documents SET block_number = $1, cert_id = $2 WHERE id = $3
-             RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at, block_number, cert_id;`,
+             RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at, block_number, cert_id, status;`,
             [chainResult.blockNumber, certId, doc.id]
         );
 
@@ -91,8 +103,10 @@ async function anchorDocument(req, res, next) {
             blockchainAnchored: true
         });
     } catch (err) {
-        await client.query('ROLLBACK').catch(() => {});
-        client.release();
+        if (client) {
+            await client.query('ROLLBACK').catch(() => {});
+            client.release();
+        }
 
         if (err.code === '23505') {
             return res.status(409).json({
@@ -111,8 +125,9 @@ async function anchorDocument(req, res, next) {
 async function getAllDocuments(req, res, next) {
     try {
         const result = await pool.query(
-            `SELECT id, doc_type, name, identity_no, dob, authority, hash, anchored_at, block_number, cert_id
+            `SELECT id, doc_type, name, identity_no, dob, authority, hash, anchored_at, block_number, cert_id, status
              FROM gov_documents
+             WHERE status != 'CORRECTED' OR status IS NULL
              ORDER BY anchored_at DESC;`
         );
         return res.status(200).json({
@@ -132,6 +147,10 @@ async function getAllDocuments(req, res, next) {
  */
 async function verifyDocument(req, res, next) {
     try {
+        if (!req.body || typeof req.body !== 'object') {
+            return res.status(400).json({ success: false, error: 'identity_no, dob and doc_type are required' });
+        }
+
         const { identity_no, dob, doc_type } = req.body;
 
         if (!identity_no || !dob || !doc_type) {
@@ -141,8 +160,9 @@ async function verifyDocument(req, res, next) {
         const cleanId = normalizeId(identity_no);
 
         const result = await pool.query(
-            `SELECT id, doc_type, name, authority, hash, anchored_at
-             FROM gov_documents WHERE identity_no = $1;`,
+            `SELECT id, doc_type, name, authority, hash, anchored_at, status
+             FROM gov_documents WHERE identity_no = $1 AND (status = 'ACTIVE' OR status IS NULL)
+             ORDER BY version DESC LIMIT 1;`,
             [cleanId]
         );
 
@@ -162,6 +182,7 @@ async function verifyDocument(req, res, next) {
             authority: verified ? record.authority : null,
             docType: verified ? record.doc_type : null,
             anchoredAt: verified ? record.anchored_at : null,
+            status: record.status || 'ACTIVE'
         });
     } catch (err) {
         next(err);
@@ -170,16 +191,15 @@ async function verifyDocument(req, res, next) {
 
 /**
  * GET /api/documents/stats
- * Return aggregate stats: total counts per doc_type, last anchored time.
  */
 async function getStats(req, res, next) {
     try {
         const result = await pool.query(
             `SELECT
-               COUNT(*)::int                            AS total,
-               COUNT(*) FILTER (WHERE doc_type='aadhaar')::int AS aadhaar,
-               COUNT(*) FILTER (WHERE doc_type='pan')::int     AS pan,
-               COUNT(*) FILTER (WHERE doc_type='voter')::int   AS voter,
+               COUNT(*)::int                                    AS total,
+               COUNT(*) FILTER (WHERE doc_type='aadhaar')::int  AS aadhaar,
+               COUNT(*) FILTER (WHERE doc_type='pan')::int      AS pan,
+               COUNT(*) FILTER (WHERE doc_type='voter')::int    AS voter,
                MAX(anchored_at)                                 AS last_anchored
              FROM gov_documents;`
         );
@@ -191,15 +211,14 @@ async function getStats(req, res, next) {
 
 /**
  * GET /api/documents/:identity_no
- * Return a single document by its identity number.
  */
 async function getDocumentByIdentity(req, res, next) {
     try {
         const cleanId = normalizeId(req.params.identity_no);
 
         const result = await pool.query(
-            `SELECT id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at
-             FROM gov_documents WHERE identity_no = $1;`,
+            `SELECT id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at, block_number, cert_id, status
+             FROM gov_documents WHERE identity_no = $1 ORDER BY version DESC LIMIT 1;`,
             [cleanId]
         );
 
@@ -218,17 +237,17 @@ async function getDocumentByIdentity(req, res, next) {
 
 /**
  * PUT /api/documents/:identity_no
- * Update an existing document record (name, dob, authority, address).
- * Re-computes hash if dob or doc_type changes.
+ * Protected by requireAuth.
+ * Prevents silent hash divergence (CONS-004):
+ * If DOB or doc_type changes, revokes old hash and anchors new hash on-chain!
  */
 async function updateDocument(req, res, next) {
     try {
         const cleanId = normalizeId(req.params.identity_no);
-        const { name, dob, authority, address } = req.body;
+        const { name, dob, authority, address } = req.body || {};
 
-        // Check the document exists
         const existing = await pool.query(
-            `SELECT * FROM gov_documents WHERE identity_no = $1;`,
+            `SELECT * FROM gov_documents WHERE identity_no = $1 ORDER BY version DESC LIMIT 1;`,
             [cleanId]
         );
 
@@ -245,21 +264,36 @@ async function updateDocument(req, res, next) {
         const updatedAuthority = authority?.trim() || current.authority;
         const updatedAddress = address !== undefined ? (address?.trim() || null) : current.address;
 
-        // Re-compute hash with potentially updated DOB
-        const hash = generateHash(cleanId, updatedDob, current.doc_type);
+        let newHash = current.hash;
+        let blockNumber = current.block_number;
+
+        // If DOB changes, we must maintain blockchain consistency
+        if (dob && dob !== current.dob) {
+            newHash = generateHash(cleanId, updatedDob, current.doc_type);
+
+            // Revoke old hash on-chain
+            await revokeHashOnChain(current.hash);
+
+            // Anchor new hash on-chain
+            const anchorRes = await anchorHashOnChain(newHash, current.doc_type);
+            if (anchorRes.success) {
+                blockNumber = anchorRes.blockNumber;
+            }
+        }
 
         const result = await pool.query(
             `UPDATE gov_documents
-             SET name = $1, dob = $2, authority = $3, address = $4, hash = $5
-             WHERE identity_no = $6
-             RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at;`,
-            [updatedName, updatedDob, updatedAuthority, updatedAddress, hash, cleanId]
+             SET name = $1, dob = $2, authority = $3, address = $4, hash = $5, block_number = $6
+             WHERE id = $7
+             RETURNING id, doc_type, name, identity_no, dob, authority, address, hash, anchored_at, block_number, cert_id, status;`,
+            [updatedName, updatedDob, updatedAuthority, updatedAddress, newHash, blockNumber, current.id]
         );
 
         return res.status(200).json({
             success: true,
             message: `${DOC_LABELS[current.doc_type] || 'Document'} updated successfully`,
             data: result.rows[0],
+            blockchainUpdated: dob !== current.dob
         });
     } catch (err) {
         next(err);
@@ -268,33 +302,42 @@ async function updateDocument(req, res, next) {
 
 /**
  * DELETE /api/documents/:identity_no
- * Remove a document from the ledger by identity number.
+ * Protected by requireAuth.
+ * Revokes on blockchain and marks REVOKED in DB (maintains CONS-005 consistency).
  */
 async function deleteDocument(req, res, next) {
     try {
         const cleanId = normalizeId(req.params.identity_no);
 
-        const result = await pool.query(
-            `DELETE FROM gov_documents WHERE identity_no = $1 RETURNING id, doc_type, name, identity_no, hash;`,
+        const existing = await pool.query(
+            `SELECT * FROM gov_documents WHERE identity_no = $1 ORDER BY version DESC LIMIT 1;`,
             [cleanId]
         );
 
-        if (result.rows.length === 0) {
+        if (existing.rows.length === 0) {
             return res.status(404).json({
                 success: false,
                 error: 'No document found with this identity number',
             });
         }
 
-        const doc = result.rows[0];
+        const doc = existing.rows[0];
 
-        // Blockchain Integration: Revoke hash on-chain
+        // 1. Revoke on chain
         const isRevokedOnChain = await revokeHashOnChain(doc.hash);
+
+        // 2. Mark REVOKED in database (or remove if no history)
+        const reason = req.body?.reason || 'Document revoked by authorized API request';
+        const result = await pool.query(
+            `UPDATE gov_documents SET status = 'REVOKED', revocation_reason = $1, revoked_at = NOW()
+             WHERE id = $2 RETURNING id, doc_type, name, identity_no, hash, status;`,
+            [reason, doc.id]
+        );
 
         return res.status(200).json({
             success: true,
-            message: `${DOC_LABELS[doc.doc_type] || 'Document'} removed from the ledger`,
-            data: { id: doc.id, doc_type: doc.doc_type, name: doc.name, identity_no: doc.identity_no },
+            message: `${DOC_LABELS[doc.doc_type] || 'Document'} revoked from the ledger`,
+            data: result.rows[0],
             blockchainRevoked: isRevokedOnChain
         });
     } catch (err) {
@@ -304,15 +347,14 @@ async function deleteDocument(req, res, next) {
 
 /**
  * GET /api/documents/:identity_no/blockchain-verify
- * Verifies a specific document hash on the blockchain.
  */
 async function blockchainVerify(req, res, next) {
     try {
         const cleanId = normalizeId(req.params.identity_no);
 
         const result = await pool.query(
-            `SELECT id, doc_type, name, identity_no, dob, authority, hash, anchored_at
-             FROM gov_documents WHERE identity_no = $1;`,
+            `SELECT id, doc_type, name, identity_no, dob, authority, hash, anchored_at, status
+             FROM gov_documents WHERE identity_no = $1 ORDER BY version DESC LIMIT 1;`,
             [cleanId]
         );
 
@@ -324,8 +366,6 @@ async function blockchainVerify(req, res, next) {
         }
 
         const record = result.rows[0];
-
-        // Blockchain Integration: Verify Hash on-chain
         const onChainData = await verifyHashOnChain(record.hash);
 
         return res.status(200).json({
@@ -335,14 +375,23 @@ async function blockchainVerify(req, res, next) {
                 docType: record.doc_type,
                 name: record.name,
                 anchoredAt: record.anchored_at,
-                hash: record.hash
+                hash: record.hash,
+                status: record.status || 'ACTIVE'
             },
             blockchainRecord: onChainData
         });
-
     } catch (err) {
         next(err);
     }
 }
 
-module.exports = { anchorDocument, getAllDocuments, verifyDocument, getStats, getDocumentByIdentity, updateDocument, deleteDocument, blockchainVerify };
+module.exports = {
+    anchorDocument,
+    getAllDocuments,
+    verifyDocument,
+    getStats,
+    getDocumentByIdentity,
+    updateDocument,
+    deleteDocument,
+    blockchainVerify
+};

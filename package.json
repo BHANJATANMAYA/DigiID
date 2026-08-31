@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "import:csv": "node backend/scripts/importCSV.js backend/data/sample_documents.csv"
+    "import:csv": "node backend/scripts/importCSV.js backend/data/sample_documents.csv",
+    "test": "node test/run-all-tests.js"
   },
   "keywords": [
     "express",

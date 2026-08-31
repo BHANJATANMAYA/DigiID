@@ -26,7 +26,7 @@ let _contract = null;
  */
 function getConnection() {
     // Re-create provider on every call so a Hardhat restart is handled
-    _provider = new ethers.JsonRpcProvider(rpcUrl);
+    _provider = new ethers.JsonRpcProvider(rpcUrl, { chainId: 31337, name: 'localhost' }, { staticNetwork: true });
 
     // Read private key from BLOCKCHAIN_PRIVATE_KEY
     const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
