@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "public": true,
   "builds": [
     {
       "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/*.js",
       "use": "@vercel/node"
     },
     {
@@ -19,6 +22,14 @@
     {
       "src": "/api/health",
       "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/admin/(.*)",
+      "dest": "/api/admin.js"
+    },
+    {
+      "src": "/api/admin",
+      "dest": "/api/admin.js"
     },
     {
       "src": "/api/documents/anchor",
@@ -41,12 +52,16 @@
       "dest": "/frontend/admin/login.html"
     },
     {
-      "src": "/admin/(.*)",
+      "src": "/admin/index",
       "dest": "/frontend/admin/index.html"
     },
     {
       "src": "/admin",
       "dest": "/frontend/admin/login.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/frontend/admin/$1"
     },
     {
       "src": "/(.*)",
