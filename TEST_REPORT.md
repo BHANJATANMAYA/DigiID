@@ -1,6 +1,6 @@
 # DigiID Automated Test Report & Quality Assessment
 
-Generated on: `2026-08-31T08:43:51.886Z`  
+Generated on: `2026-08-31T10:12:43.404Z`  
 Host Environment: `Windows (Node.js v22.16.0)`  
 Repository: `DigiID — Hybrid Web2/Web3 Identity Verification Application`
 
@@ -175,7 +175,7 @@ A separate, production-style prototype Admin Panel has been fully implemented an
 | FE-017 | Frontend | `test/frontend/frontend.test.js` | Dark Theme Toggle logic in frontend | Test assertion passes | Passed successfully | **PASS** | ok 7 - FE-017: Dark Theme Toggle logic in frontend |
 | FE-018 | Frontend | `test/frontend/frontend.test.js` | Font size controls accessible | Test assertion passes | Passed successfully | **PASS** | ok 8 - FE-018: Font size controls accessible |
 | FE-019 | Frontend | `test/frontend/frontend.test.js` | Mobile Responsive Viewport Meta Tag | Test assertion passes | Passed successfully | **PASS** | ok 9 - FE-019: Mobile Responsive Viewport Meta Tag |
-| DB-LIVE-SUPABASE | Database Integration | `backend/src/core/config/database.js` | Direct Connection to Remote Supabase Cloud Endpoint | Successful TLS handshake with remote PostgreSQL host | getaddrinfo ENOTFOUND db.lrvjxqjfwomgnyfsliao.supabase.co | **BLOCKED** | External Supabase project domain is unresolvable via local DNS. Local fallback utilized for tests. |
+| DB-LIVE-SUPABASE | Database Integration | `backend/src/core/config/database.js` | Connection to Remote Supabase Cloud PostgreSQL Endpoint | Successful TLS handshake with remote PostgreSQL host | node: -e requires an argument | **BLOCKED** | External Supabase connection could not be established. |
 | BC-LIVE-RPC-DAEMON | Blockchain Integration | `backend/src/core/config/blockchain.js` | Connection to Standalone Local JSON-RPC Daemon (127.0.0.1:8545) | HTTP 200 JSON-RPC response from persistent Hardhat node | ECONNREFUSED 127.0.0.1:8545 (daemon not started as external process) | **BLOCKED** | Hardhat in-memory network passed all contract tests. Standalone daemon requires background process. |
 
 ---

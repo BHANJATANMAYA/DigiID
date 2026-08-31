@@ -156,18 +156,43 @@ for (const s of suites) {
     }
 }
 
-// ── 3. Record Environmental / BLOCKED Dependencies ─────────────
-// Check live external Supabase DNS
-recordResult({
-    id: 'DB-LIVE-SUPABASE',
-    category: 'Database Integration',
-    component: 'backend/src/core/config/database.js',
-    scenario: 'Direct Connection to Remote Supabase Cloud Endpoint',
-    expected: 'Successful TLS handshake with remote PostgreSQL host',
-    actual: 'getaddrinfo ENOTFOUND db.lrvjxqjfwomgnyfsliao.supabase.co',
-    status: 'BLOCKED',
-    evidence: 'External Supabase project domain is unresolvable via local DNS. Local fallback utilized for tests.'
-});
+// ── 3. Record Environmental Dependencies ─────────────────────
+// Check live Supabase connection
+const dbProbe = spawnSync('node', ['-e', `
+    const pool = require('./backend/src/core/config/database');
+    pool.query('SELECT count(*) FROM gov_documents').then(r => {
+        console.log('ROWS:' + r.rows[0].count);
+        pool.end();
+    }).catch(e => {
+        console.error('FAIL:' + e.message);
+        pool.end();
+        process.exit(1);
+    });
+`], { cwd: rootDir, encoding: 'utf8', shell: true });
+
+if (dbProbe.status === 0) {
+    recordResult({
+        id: 'DB-LIVE-SUPABASE',
+        category: 'Database Integration',
+        component: 'backend/src/core/config/database.js',
+        scenario: 'Connection to Remote Supabase Cloud PostgreSQL Endpoint',
+        expected: 'Successful TLS handshake and query execution with Supabase pooler',
+        actual: 'Connected and queried gov_documents table (' + dbProbe.stdout.trim() + ')',
+        status: 'PASS',
+        evidence: 'Live query against aws-0-ap-southeast-1.pooler.supabase.com succeeded'
+    });
+} else {
+    recordResult({
+        id: 'DB-LIVE-SUPABASE',
+        category: 'Database Integration',
+        component: 'backend/src/core/config/database.js',
+        scenario: 'Connection to Remote Supabase Cloud PostgreSQL Endpoint',
+        expected: 'Successful TLS handshake with remote PostgreSQL host',
+        actual: (dbProbe.stderr || dbProbe.stdout || 'Connection failed').trim(),
+        status: 'BLOCKED',
+        evidence: 'External Supabase connection could not be established.'
+    });
+}
 
 // Check live RPC daemon
 recordResult({

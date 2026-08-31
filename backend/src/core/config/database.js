@@ -1,5 +1,7 @@
 const { Pool } = require('pg');
+const path = require('path');
 require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
 // Use DATABASE_URL (Supabase / Neon / any cloud PG) if set,
 // otherwise fall back to individual host/port/user/pass vars for local dev.
