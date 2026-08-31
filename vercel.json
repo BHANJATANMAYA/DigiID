@@ -48,20 +48,56 @@
       "dest": "/api/documents/index.js"
     },
     {
+      "src": "/admin/styles.css",
+      "dest": "/frontend/admin/styles.css"
+    },
+    {
+      "src": "/admin/admin.js",
+      "dest": "/frontend/admin/admin.js"
+    },
+    {
+      "src": "/admin/login.html",
+      "dest": "/frontend/admin/login.html"
+    },
+    {
       "src": "/admin/login",
       "dest": "/frontend/admin/login.html"
     },
     {
-      "src": "/admin/index",
+      "src": "/admin/index.html",
       "dest": "/frontend/admin/index.html"
     },
     {
-      "src": "/admin",
+      "src": "/admin/dashboard",
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/admin/documents",
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/admin/blockchain",
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/admin/audit-logs",
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/admin/settings",
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/admin/?$",
       "dest": "/frontend/admin/login.html"
     },
     {
       "src": "/admin/(.*)",
-      "dest": "/frontend/admin/$1"
+      "dest": "/frontend/admin/index.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/frontend/login.html"
     },
     {
       "src": "/(.*)",
