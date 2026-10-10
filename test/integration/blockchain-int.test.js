@@ -8,13 +8,20 @@ describe('Blockchain Integration Tests (INT-BC-001 to INT-BC-006)', () => {
 
     test('INT-BC-003: RPC Failure Simulation handles offline node gracefully', async () => {
         // When RPC is unreachable, functions return controlled failure without throwing unhandled exceptions
-        const res = await anchorHashOnChain('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'aadhaar');
-        assert.equal(res.success, false);
-        assert.equal(res.blockNumber, null);
+        const savedRpc = process.env.BLOCKCHAIN_RPC_URL;
+        process.env.BLOCKCHAIN_RPC_URL = 'http://127.0.0.1:9999';
+        try {
+            const res = await anchorHashOnChain('ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 'aadhaar');
+            assert.equal(res.success, false);
+            assert.equal(res.blockNumber, null);
+        } finally {
+            if (savedRpc) process.env.BLOCKCHAIN_RPC_URL = savedRpc;
+            else delete process.env.BLOCKCHAIN_RPC_URL;
+        }
     });
 
     test('INT-BC-004: Invalid Contract Address fails safely', async () => {
-        const verifyRes = await verifyHashOnChain('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+        const verifyRes = await verifyHashOnChain('fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe');
         assert.equal(verifyRes.exists, false);
     });
 
@@ -22,7 +29,7 @@ describe('Blockchain Integration Tests (INT-BC-001 to INT-BC-006)', () => {
         const oldKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
         delete process.env.BLOCKCHAIN_PRIVATE_KEY;
         try {
-            const res = await revokeHashOnChain('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+            const res = await revokeHashOnChain('fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe');
             assert.equal(res, false);
         } finally {
             if (oldKey) process.env.BLOCKCHAIN_PRIVATE_KEY = oldKey;

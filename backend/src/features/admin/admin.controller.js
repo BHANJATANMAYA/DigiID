@@ -11,8 +11,7 @@ const {
     checkSystemHealth,
     correctDocument,
     revokeDocument,
-    generateCSV,
-    DEFAULT_ADMIN_EMAIL
+    generateCSV
 } = require('./admin.service');
 const {
     createAdminToken,

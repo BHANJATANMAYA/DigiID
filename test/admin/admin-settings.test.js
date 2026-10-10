@@ -6,10 +6,6 @@ const {
     getSystemSettings,
     updateSystemSettings
 } = require('../../backend/src/features/admin/admin.service');
-const {
-    getSettingsHandler,
-    updateSettingsHandler
-} = require('../../backend/src/features/admin/admin.controller');
 
 describe('Admin Settings Tests (ADMIN-SET-001 to ADMIN-SET-006)', () => {
 

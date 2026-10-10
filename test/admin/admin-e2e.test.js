@@ -6,8 +6,6 @@ const {
     login,
     getDashboard,
     getDocuments,
-    verifyDocumentHandler,
-    revokeDocumentHandler,
     correctDocumentHandler
 } = require('../../backend/src/features/admin/admin.controller');
 const { getAuditLogs } = require('../../backend/src/features/admin/admin.service');

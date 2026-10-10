@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { requireAdminAuth } = require('../../backend/src/core/middleware/admin.middleware');
-const { revealPII, getBlockchainInfo } = require('../../backend/src/features/admin/admin.controller');
+const { getBlockchainInfo } = require('../../backend/src/features/admin/admin.controller');
 const { getAuditLogs } = require('../../backend/src/features/admin/admin.service');
 
 describe('Admin Authorization and Security Tests (ADMIN-SEC-001 to ADMIN-SEC-013)', () => {

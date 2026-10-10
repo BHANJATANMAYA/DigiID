@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const pool = require('../../core/config/database');
 const { generateHash } = require('../documents/hashGenerator');
-const { anchorHashOnChain, revokeHashOnChain, verifyHashOnChain } = require('../../core/config/blockchain');
+const { anchorHashOnChain, revokeHashOnChain } = require('../../core/config/blockchain');
 
 // ── Super Admin Credentials Setup ─────────────────────────────
 const DEFAULT_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@digiid.gov.in').toLowerCase().trim();

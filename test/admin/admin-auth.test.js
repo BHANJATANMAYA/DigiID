@@ -4,8 +4,7 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const {
     login,
-    logout,
-    getMe
+    logout
 } = require('../../backend/src/features/admin/admin.controller');
 const {
     createAdminToken,

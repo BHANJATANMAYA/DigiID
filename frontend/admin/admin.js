@@ -4,7 +4,6 @@
 const token = localStorage.getItem('digiid_admin_token');
 let currentDocs = [];
 let currentPage = 1;
-let currentTargetDoc = null;
 
 if (!token) {
     window.location.replace('/admin/login');

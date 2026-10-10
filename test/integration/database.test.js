@@ -2,7 +2,6 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const pool = require('../../backend/src/core/config/database');
 
 describe('Database Tests (DB-001 to DB-010)', () => {
 

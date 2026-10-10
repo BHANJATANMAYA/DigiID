@@ -33,7 +33,7 @@ describe('Security Test Cases (SEC-001 to SEC-013)', () => {
     });
 
     test('SEC-002 & SEC-003: XSS & HTML Attribute Injection in Document Fields', () => {
-        const { buildCertificateHTML, generateQRCode } = require('../../backend/src/features/certificates/certificateGenerator');
+        const { buildCertificateHTML } = require('../../backend/src/features/certificates/certificateGenerator');
         const doc = {
             id: 1,
             doc_type: 'aadhaar',

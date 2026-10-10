@@ -3,7 +3,6 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const { generateCSV } = require('../../backend/src/features/admin/admin.service');
-const { exportDocumentsHandler } = require('../../backend/src/features/admin/admin.controller');
 
 describe('Admin Export Tests (ADMIN-EXPORT-001 to ADMIN-EXPORT-006)', () => {
 

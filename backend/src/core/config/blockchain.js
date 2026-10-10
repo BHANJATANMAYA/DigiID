@@ -2,10 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const { ethers } = require('ethers');
 require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../../../blockchain/.env') });
 
 // ── Config ────────────────────────────────────────────────────────────────────
-
-const rpcUrl = process.env.BLOCKCHAIN_RPC_URL || 'http://127.0.0.1:8545';
 
 // Map string doc types to the Solidity enum indices
 const DOC_TYPE_ENUM = { aadhaar: 0, pan: 1, voter: 2 };
@@ -25,8 +25,13 @@ let _contract = null;
  * Returns { contract, wallet } or throws if configuration is missing.
  */
 function getConnection() {
+    const rpcUrl = process.env.BLOCKCHAIN_RPC_URL || 'http://127.0.0.1:8545';
+    const isLocalNode = rpcUrl.includes('localhost') || rpcUrl.includes('127.0.0.1');
+
     // Re-create provider on every call so a Hardhat restart is handled
-    _provider = new ethers.JsonRpcProvider(rpcUrl, { chainId: 31337, name: 'localhost' }, { staticNetwork: true });
+    _provider = isLocalNode
+        ? new ethers.JsonRpcProvider(rpcUrl, { chainId: 31337, name: 'localhost' }, { staticNetwork: true })
+        : new ethers.JsonRpcProvider(rpcUrl);
 
     // Read private key from BLOCKCHAIN_PRIVATE_KEY
     const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;

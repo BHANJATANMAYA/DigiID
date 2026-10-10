@@ -158,17 +158,8 @@ for (const s of suites) {
 
 // ── 3. Record Environmental Dependencies ─────────────────────
 // Check live Supabase connection
-const dbProbe = spawnSync('node', ['-e', `
-    const pool = require('./backend/src/core/config/database');
-    pool.query('SELECT count(*) FROM gov_documents').then(r => {
-        console.log('ROWS:' + r.rows[0].count);
-        pool.end();
-    }).catch(e => {
-        console.error('FAIL:' + e.message);
-        pool.end();
-        process.exit(1);
-    });
-`], { cwd: rootDir, encoding: 'utf8', shell: true });
+const dbScript = "const pool = require('./backend/src/core/config/database'); pool.query('SELECT count(*) FROM gov_documents').then(r => { console.log('ROWS:' + r.rows[0].count); pool.end(); process.exit(0); }).catch(e => { console.error('FAIL:' + e.message); pool.end(); process.exit(1); });";
+const dbProbe = spawnSync(process.execPath, ['-e', dbScript], { cwd: rootDir, encoding: 'utf8' });
 
 if (dbProbe.status === 0) {
     recordResult({
@@ -177,9 +168,9 @@ if (dbProbe.status === 0) {
         component: 'backend/src/core/config/database.js',
         scenario: 'Connection to Remote Supabase Cloud PostgreSQL Endpoint',
         expected: 'Successful TLS handshake and query execution with Supabase pooler',
-        actual: 'Connected and queried gov_documents table (' + dbProbe.stdout.trim() + ')',
+        actual: 'Connected and queried gov_documents table (' + dbProbe.stdout.trim().replace(/\r?\n/g, ' ') + ')',
         status: 'PASS',
-        evidence: 'Live query against aws-0-ap-southeast-1.pooler.supabase.com succeeded'
+        evidence: 'Live query against Supabase PostgreSQL succeeded'
     });
 } else {
     recordResult({
@@ -194,17 +185,33 @@ if (dbProbe.status === 0) {
     });
 }
 
-// Check live RPC daemon
-recordResult({
-    id: 'BC-LIVE-RPC-DAEMON',
-    category: 'Blockchain Integration',
-    component: 'backend/src/core/config/blockchain.js',
-    scenario: 'Connection to Standalone Local JSON-RPC Daemon (127.0.0.1:8545)',
-    expected: 'HTTP 200 JSON-RPC response from persistent Hardhat node',
-    actual: 'ECONNREFUSED 127.0.0.1:8545 (daemon not started as external process)',
-    status: 'BLOCKED',
-    evidence: 'Hardhat in-memory network passed all contract tests. Standalone daemon requires background process.'
-});
+// Check live RPC daemon / provider
+const bcScript = "const { ethers } = require('ethers'); const path = require('path'); require('dotenv').config({ path: path.join(__dirname, 'backend', '.env') }); const url = process.env.BLOCKCHAIN_RPC_URL || 'http://127.0.0.1:8545'; const p = new ethers.JsonRpcProvider(url); p.getBlockNumber().then(b => { console.log('BLOCK:' + b); process.exit(0); }).catch(e => { console.error('FAIL:' + e.message); process.exit(1); });";
+const bcProbe = spawnSync(process.execPath, ['-e', bcScript], { cwd: rootDir, encoding: 'utf8' });
+
+if (bcProbe.status === 0) {
+    recordResult({
+        id: 'BC-LIVE-RPC-DAEMON',
+        category: 'Blockchain Integration',
+        component: 'backend/src/core/config/blockchain.js',
+        scenario: 'Connection to Configured Ethereum JSON-RPC Endpoint (Sepolia / Node)',
+        expected: 'HTTP 200 JSON-RPC response from blockchain provider',
+        actual: 'Connected to RPC endpoint (' + bcProbe.stdout.trim() + ')',
+        status: 'PASS',
+        evidence: 'Live block height query returned successfully.'
+    });
+} else {
+    recordResult({
+        id: 'BC-LIVE-RPC-DAEMON',
+        category: 'Blockchain Integration',
+        component: 'backend/src/core/config/blockchain.js',
+        scenario: 'Connection to Standalone Local JSON-RPC Daemon (127.0.0.1:8545)',
+        expected: 'HTTP 200 JSON-RPC response from persistent Hardhat node',
+        actual: (bcProbe.stderr || bcProbe.stdout || 'ECONNREFUSED 127.0.0.1:8545').trim(),
+        status: 'BLOCKED',
+        evidence: 'Hardhat in-memory network passed all contract tests. Standalone daemon requires background process.'
+    });
+}
 
 // ── 4. Generate TEST_REPORT.md ────────────────────────────────
 console.log('\n--- Compiling TEST_REPORT.md ---');

@@ -2,12 +2,6 @@
 
 const VALID_DOC_TYPES = ['aadhaar', 'pan', 'voter'];
 
-const IDENTITY_RULES = {
-    aadhaar: { min: 12, max: 12, pattern: /^\d{12}$/, label: 'Aadhaar number must be exactly 12 digits' },
-    pan: { min: 10, max: 10, pattern: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, label: 'PAN must be in format ABCDE1234F' },
-    voter: { min: 8, max: 12, pattern: /^[A-Z0-9]{8,12}$/, label: 'EPIC number must be 8–12 alphanumeric characters' },
-};
-
 /**
  * Validate document data against strict government ID rules.
  * Handles null/undefined/non-object input safely (VAL-017).

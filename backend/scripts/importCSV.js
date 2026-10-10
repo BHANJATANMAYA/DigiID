@@ -6,9 +6,10 @@
 // Usage: node scripts/importCSV.js <path-to-csv-file>
 // Example: node scripts/importCSV.js data/sample_documents.csv
 
-require('dotenv').config();
-const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const fs = require('fs');
 const pool = require('../src/core/config/database');
 const { generateHash } = require('../src/features/documents/hashGenerator');
 
